@@ -105,17 +105,17 @@ Other info can be found here: https://docs.tranche.finance/tranchefinance/slice-
         <tr>
             <td>IncentivesController</td>
             <td><code>68.91%</code></td>
-            <td>99% in tranche-rewards repo</td>
+            <td>99% in https://github.com/tranche-jibrel/tranche-rewards</td>
         </tr>
         <tr>
             <td>MarketHelper</td>
             <td><code>90.24%</code></td>
-            <td>98% in tranche-rewards repo</td>
+            <td>98% in https://github.com/tranche-jibrel/tranche-rewards</td>
         </tr>
         <tr>
             <td>PriceHelper</td>
             <td><code>30.43%</code></td>
-            <td>96% in tranche-rewards repo</td>
+            <td>96% in https://github.com/tranche-jibrel/tranche-rewards</td>
         </tr>
     </tbody>
   </table>
