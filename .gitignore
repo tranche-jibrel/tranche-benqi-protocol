@@ -1,0 +1,7 @@
+.env
+*.txt
+unknown*
+old/
+build/
+coverage/
+node_modules/
