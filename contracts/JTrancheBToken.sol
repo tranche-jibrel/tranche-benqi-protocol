@@ -69,7 +69,7 @@ contract JTrancheBToken is Ownable, ERC20, AccessControl, IJTrancheTokens {
 	}
 
     /**
-	 * @dev function that mints tokens to an account.truffle
+	 * @dev function that mints tokens to an account
 	 * @param account The account that will receive the created tokens.
 	 * @param value The amount that will be created.
 	 */

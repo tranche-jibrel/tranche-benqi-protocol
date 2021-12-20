@@ -428,7 +428,7 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
      * @param _amount amount of tranche A tokens
      * @param _time time to be considered the deposit
      */
-    function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external onlyAdmins {
+    function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external override onlyAdmins {
         stakeCounterTrA[_account][_trancheNum] = _stkNum;
         StakingDetails storage details = stakingDetailsTrancheA[_account][_trancheNum][_stkNum];
         details.startTime = _time;
@@ -475,7 +475,7 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
      * @param _amount amount of tranche B tokens
      * @param _time time to be considered the deposit
      */
-    function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external onlyAdmins {
+    function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external override onlyAdmins {
         stakeCounterTrB[_account][_trancheNum] = _stkNum;
         StakingDetails storage details = stakingDetailsTrancheB[_account][_trancheNum][_stkNum];
         details.startTime = _time;

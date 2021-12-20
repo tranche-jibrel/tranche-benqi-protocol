@@ -52,10 +52,10 @@ contract JTranchesDeployer is OwnableUpgradeable, JTranchesDeployerStorage, IJTr
         return address(jTrancheB);
     }
 
-    function setNewJYearnTokens(address _newJYearn, address _trAToken, address _trBToken) external onlyOwner {
-        require((_newJYearn != address(0)) && (_trAToken != address(0)) && (_trBToken != address(0)), "TrancheDeployer: some address is not allowed");
-        JTrancheAToken(_trAToken).setJBenQiMinter(_newJYearn);
-        JTrancheAToken(_trBToken).setJBenQiMinter(_newJYearn);
+    function setNewJBenQiTokens(address _newJBenQi, address _trAToken, address _trBToken) external onlyOwner {
+        require((_newJBenQi != address(0)) && (_trAToken != address(0)) && (_trBToken != address(0)), "TrancheDeployer: some address is not allowed");
+        JTrancheAToken(_trAToken).setJBenQiMinter(_newJBenQi);
+        JTrancheAToken(_trBToken).setJBenQiMinter(_newJBenQi);
     }
 
 }
