@@ -30,7 +30,7 @@ module.exports = async (deployer, network, accounts) => {
   const QIAVAX = "0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c";
   const USDTETOKEN = "0xc7198437980c041c805A1EDcbA50c1Ce5db95118";  // 6 decs
   const QIUSDT = "0xc9e5999b8e75C3fEB117F6f73E664b9f3C8ca65C";
-  const USDCETOKEN = "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";  
+  const USDCETOKEN = "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
   const QIUSDC = "0xBEb5d47A3f720Ec0a390d04b4d41ED7d9688bC7F";
   const DAIETOKEN = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
   const QIDAI = "0x835866d37AFB8CB8F8334dCCdaf66cf01832Ff5D";
@@ -132,11 +132,11 @@ module.exports = async (deployer, network, accounts) => {
     console.log('myIncentivesControllerInstance Deployed: ', myIncentivesControllerInstance.address);
 
     await myPriceHelperInst.setControllerAddress(myIncentivesControllerInstance.address, { from: tokenOwner })
-    
+
     await JBQInstance.setIncentivesControllerAddress(myIncentivesControllerInstance.address)
 
   } else if (network == "fuji") {
-    let { 
+    let {
       IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS, FEE_COLLECTOR_ADDRESS
     } = process.env;
     const accounts = await web3.eth.getAccounts();
@@ -151,7 +151,7 @@ module.exports = async (deployer, network, accounts) => {
         const JATinstance = await JAdminTools.at("0xb1c8993C9C8Fb4bCBFA07a7688f0BDd3Ad6775C0");
         console.log('JAdminTools Deployed: ', JATinstance.address);
 
-        const JFCinstance = await  JFeesCollector.at("0xC0c7EFB8d45dC65ed343FC6e6433812cB43315b1");
+        const JFCinstance = await JFeesCollector.at("0xC0c7EFB8d45dC65ed343FC6e6433812cB43315b1");
         console.log('JFeesCollector Deployed: ', JFCinstance.address);
 
         const compoundDeployer = await JTranchesDeployer.at("0x19f792fBA533D5fa9b30da496fA4Cb06CBCdD1cc")
@@ -167,9 +167,9 @@ module.exports = async (deployer, network, accounts) => {
 
         const JBQHelper = await deployProxy(JBenQiHelper, [], { from: factoryOwner });
         console.log("JC Helper: " + JBQHelper.address);
-    
+
         await JBenQiInstance.setJBenQiHelperAddress(JBQHelper.address)
-    
+
 
         await JBenQiInstance.setCTokenContract(TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, { from: factoryOwner });
         console.log('compound deployer 2');
@@ -198,56 +198,183 @@ module.exports = async (deployer, network, accounts) => {
         console.log(error);
       }
     }
-  } else if (network == "mainnet") {
-    let { 
-      IS_UPGRADE, TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS, FEE_COLLECTOR_ADDRESS
+  } else if (network == "avaxmainnet") {
+    let {
+      IS_UPGRADE,
+      ADMIN_TOOLS,
+      FEE_COLLECTOR_ADDRESS,
+      WETH_GATEWAY,
+      MOCK_INCENTIVE_CONTROLLER,
+      WAVAX_ADDRESS,
+      QI_CONTROLLER,
+      REWARD_TOKEN_ADDRESS,
+
+      AVAX_ADDRESS, qiWAVAX_ADDRESS,
+
+      WETH_ADDRESS, qiWETH_ADDRESS,
+
+      WBTC_ADDRESS, qiWBTC_ADDRESS,
+
+      DAI_ADDRESS, qiDAI_ADDRESS,
+
+      USDT_ADDRESS, qiUSDT_ADDRESS,
+
+      USDC_ADDRESS, qiUSDC_ADDRESS,
+
+      LINK_ADDRESS, qiLINK_ADDRESS,
+
+      QI_ADDRESS, qiQI_ADDRESS
     } = process.env;
     const accounts = await web3.eth.getAccounts();
     const factoryOwner = accounts[0];
     if (IS_UPGRADE == 'true') {
       console.log('contracts are being upgraded');
-      const JFCinstance = await upgradeProxy(FEE_COLLECTOR_ADDRESS, JFeesCollector, { from: factoryOwner });
-      console.log(`FEE_COLLECTOR_ADDRESS=${JFCinstance.address}`)
     } else {
       try {
-        const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
-        console.log('JAdminTools Deployed: ', JATinstance.address);
+        let JATinstance = null;
+        let JFCinstance = null;
+        let JWGinstance = null
+        if (!ADMIN_TOOLS) {
+          JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
+          console.log('JAdminTools Deployed: ', JATinstance.address);
+        } else {
+          JATinstance = await JAdminTools.at(ADMIN_TOOLS);
+        }
+        if (!FEE_COLLECTOR_ADDRESS) {
+          JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
+          console.log('JFeesCollector Deployed: ', JFCinstance.address);
+        } else {
+          JFCinstance = {
+            address: FEE_COLLECTOR_ADDRESS
+          }
+        }
 
-        const JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
-        console.log('JFeesCollector Deployed: ', JFCinstance.address);
+        const JTDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner });
+        console.log("BENQI_DEPLOYER " + JTDeployer.address);
 
-        const compoundDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner, unsafeAllowCustomTypes: true });
-        console.log(`COMPOUND_DEPLOYER=${compoundDeployer.address}`);
+        await JATinstance.addAdmin(JTDeployer.address, { from: factoryOwner })
+        console.log('admin added 1');
 
-        const JBenQiInstance = await deployProxy(JBenQi, [JATinstance.address, JFCinstance.address, compoundDeployer.address, COMP_ADDRESS, COMP_CONTROLLER, SLICE_ADDRESS],
-          { from: factoryOwner });
+        const JBenQiInstance = await deployProxy(JAave, [JATinstance.address, JFCinstance.address, JTDeployer.address,
+          QI_ADDRESS, QI_CONTROLLER, REWARD_TOKEN_ADDRESS], { from: factoryOwner });
 
-        console.log(`COMPOUND_TRANCHE_ADDRESS=${JBenQiInstance.address}`);
-        compoundDeployer.setJBenQiAddress(JBenQiInstance.address);
-        console.log('compound deployer 1');
+        await JTDeployer.setBenQiAddresses(JBenQiInstance.address, JATinstance.address, { from: factoryOwner });
+        console.log('deployer 1');
 
-        await JBenQiInstance.setCTokenContract(TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, { from: factoryOwner });
-        console.log('compound deployer 2');
+        await JATinstance.addAdmin(JBenQiInstance.address, { from: factoryOwner })
+        console.log('admin added 2');
 
-        await JBenQiInstance.setCTokenContract(TRANCHE_TWO_TOKEN_ADDRESS, TRANCHE_TWO_CTOKEN_ADDRESS, { from: factoryOwner });
+        if (!WETH_GATEWAY) {
+          await deployer.deploy(AvaxGateway, WAVAX_ADDRESS, JBenQiInstance.address);
+          JWGinstance = await AvaxGateway.deployed();
+          console.log('WETH_GATEWAY', JWGinstance.address);
+        } else {
+          JWGinstance = await AvaxGateway.at(WETH_GATEWAY)
+        }
 
-        console.log('compound deployer 3');
-        await JBenQiInstance.addTrancheToProtocol(TRANCHE_ONE_TOKEN_ADDRESS, "Tranche A - Compound DAI", "ACDAI", "Tranche B - Compound DAI", "BCDAI", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
-        await JBenQiInstance.setTrancheDeposit(0, true); // enabling deposit
+        await JBenQiInstance.setAVAXGateway(JWGinstance.address, { from: factoryOwner });
+        console.log('deployer 2');
 
-        console.log('compound deployer 4');
-        await JBenQiInstance.addTrancheToProtocol(TRANCHE_TWO_TOKEN_ADDRESS, "Tranche A - Compound USDC", "ACUSDC", "Tranche B - Compound USDC", "BCUSDC", web3.utils.toWei("0.02", "ether"), 8, 6, { from: factoryOwner });
-        await JBenQiInstance.setTrancheDeposit(1, true); // enabling deposit
+        const JBQHelper = await deployProxy(JBenQiHelper, [], { from: factoryOwner });
+        console.log("BENQI_HELPER: " + JBQHelper.address);
+
+        await JBenQiInstance.setBenQiHelperAddress(JBQHelper.address)
+        console.log('deployer 3');
+
+        await JBenQiInstance.setQiAvaxContract(QIAVAX, { from: factoryOwner });
+        console.log('deployer 2');
+
+        //tranche 1  AVAX_ADDRESS,qiWAVAX_ADDRESS, 0.2977%
+        await JBenQiInstance.addTrancheToProtocol(AVAX_ADDRESS, qiWAVAX_ADDRESS, "Tranche A - BENQI Avalanche AVAX", "aqiAVAX", "Tranche B - BENQI Avalanche AVAX", "bqiAVAX", web3.utils.toWei("0.02977", "ether"), 18, { from: factoryOwner });
+        await JBenQiInstance.setTrancheDeposit(0, true, { from: factoryOwner });
+        console.log('added tranche 1')
+
+        //tranche 2  WETH_ADDRESS, qiWETH_ADDRESS, 0.0%
+        await JBenQiInstance.setQiTokenContract(WETH_ADDRESS, qiWETH_ADDRESS, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(WETH_ADDRESS, qiWETH_ADDRESS, "Tranche A - BENQI Avalanche WETH", "aqiWETH", "Tranche B - BENQI Avalanche WETH", "bqiWETH", web3.utils.toWei("0.00", "ether"), 18, { from: factoryOwner });
+        await JBenQiInstance.setTrancheDeposit(1, true, { from: factoryOwner });
+        console.log('added tranche 2')
+
+        //tranche 3  WBTC_ADDRESS, qiWBTC_ADDRESS, 0.0%
+        await JBenQiInstance.setQiTokenContract(WBTC_ADDRESS, qiWBTC_ADDRESS, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(WBTC_ADDRESS, qiWBTC_ADDRESS, "Tranche A - BENQI Avalanche WBTC", "aqiWBTC", "Tranche B - BENQI Avalanche WBTC", "bqiWBTC", web3.utils.toWei("0.00", "ether"), 8, { from: factoryOwner });
+        await JBenQiInstance.setTrancheDeposit(2, true, { from: factoryOwner });
+        console.log('added tranche 3');
+
+        //tranche 4  DAI_ADDRESS, qiDAI_ADDRESS, 1.5912%
+        await JBenQiInstance.setQiTokenContract(DAI_ADDRESS, qiDAI_ADDRESS, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(DAI_ADDRESS, qiDAI_ADDRESS, "Tranche A - BENQI Avalanche DAI", "aqiDAI", "Tranche B - BENQI Avalanche DAI", "bqiDAI", web3.utils.toWei("0.015912", "ether"), 18, { from: factoryOwner });
+        await JBenQiInstance.setTrancheDeposit(3, true, { from: factoryOwner });
+        console.log('added tranche 4');
+
+        //tranche 5  USDT_ADDRESS, qiUSDT_ADDRESS,0%
+        await JBenQiInstance.setQiTokenContract(USDT_ADDRESS, qiUSDT_ADDRESS, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(USDT_ADDRESS, qiUSDT_ADDRESS, "Tranche A - BENQI Avalanche USDT", "aqiUSDT", "Tranche B - BENQI Avalanche USDT", "bqiUSDT", web3.utils.toWei("0.00", "ether"), 6, { from: factoryOwner });
+        await JBenQiInstance.setTrancheDeposit(4, true, { from: factoryOwner });
+        console.log('added tranche 5');
+
+
+        //tranche 6 USDC_ADDRESS, qiUSDC_ADDRESS,0.5695%
+        await JBenQiInstance.setQiTokenContract(USDC_ADDRESS, qiUSDC_ADDRESS, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(USDC_ADDRESS, qiUSDC_ADDRESS, "Tranche A - BENQI Avalanche USDC", "aqiUSDC", "Tranche B - BENQI Avalanche USDC", "bqiUSDC", web3.utils.toWei("0.005695", "ether"), 6, { from: factoryOwner });
+        await JBenQiInstance.setTrancheDeposit(5, true, { from: factoryOwner });
+        console.log('added tranche 6');
+
+        //tranche 7 LINK_ADDRESS, qiLINK_ADDRESS,0.0%
+        await JBenQiInstance.setQiTokenContract(LINK_ADDRESS, qiLINK_ADDRESS, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(LINK_ADDRESS, qiLINK_ADDRESS, "Tranche A - BENQI Avalanche LINK", "aqiLINK", "Tranche B - BENQI Avalanche LINK", "bqiLINK", web3.utils.toWei("0.00", "ether"), 18, { from: factoryOwner });
+        await JBenQiInstance.setTrancheDeposit(6, true, { from: factoryOwner });
+        console.log('added tranche 7');
+
+        //tranche 8 QI_ADDRESS, qiQI_ADDRESS,0.0%
+        await JBenQiInstance.setQiTokenContract(QI_ADDRESS, qiQI_ADDRESS, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(QI_ADDRESS, qiQI_ADDRESS, "Tranche A - BENQI Avalanche QI", "aqiQI", "Tranche B - BENQI Avalanche QI", "bqiQI", web3.utils.toWei("0.00", "ether"), 18, { from: factoryOwner });
+        await JBenQiInstance.setTrancheDeposit(7, true, { from: factoryOwner });
+        console.log('added tranche 8');
+
+        if (!MOCK_INCENTIVE_CONTROLLER) {
+          const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
+          console.log("MOCK_INCENTIVE_CONTROLLER " + JIController.address);
+          await JBenQiInstance.setIncentivesControllerAddress(JIController.address);
+          console.log('incentive controller setup')
+        } else {
+          await JBenQiInstance.setIncentivesControllerAddress(MOCK_INCENTIVE_CONTROLLER);
+          console.log('incentive controller setup')
+        }
 
         trParams = await JBenQiInstance.trancheAddresses(0);
-        let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
-        let DaiTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
+        let tranche1A = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let tranche1B = await JTrancheBToken.at(trParams.BTrancheAddress);
         trParams = await JBenQiInstance.trancheAddresses(1);
-        let USDCTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
-        let USDCTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
+        let tranche2A = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let tranche2B = await JTrancheBToken.at(trParams.BTrancheAddress);
+        trParams = await JBenQiInstance.trancheAddresses(2);
+        let tranche3A = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let tranche3B = await JTrancheBToken.at(trParams.BTrancheAddress);
 
-        console.log(`COMPOUND_TRANCHE_ADDRESS=${JBenQiInstance.address}`);
-        console.log(`REACT_APP_COMP_TRANCHE_TOKENS=${DaiTrA.address},${DaiTrB.address},${USDCTrA.address},${USDCTrB.address}`)
+        trParams = await JBenQiInstance.trancheAddresses(3);
+        let tranche4A = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let tranche4B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+        trParams = await JBenQiInstance.trancheAddresses(4);
+        let tranche5A = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let tranche5B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+        trParams = await JBenQiInstance.trancheAddresses(5);
+        let tranche6A = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let tranche6B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+        trParams = await JBenQiInstance.trancheAddresses(6);
+        let tranche7A = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let tranche7B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+        trParams = await JBenQiInstance.trancheAddresses(7);
+        let tranche8A = await JTrancheAToken.at(trParams.ATrancheAddress);
+        let tranche8B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+        console.log(`REACT_APP_BENQI_TRANCHE_TOKENS=${tranche1A.address},${tranche2A.address},${tranche3A.address},${tranche4A.address},${tranche5A.address},${tranche6A.address},${tranche7A.address},${tranche8A.address}
+        ${tranche1B.address},${tranche2B.address},${tranche3B.address},${tranche4B.address},${tranche5B.address},${tranche6B.address},${tranche7B.address}, ${tranche8B.address}`)
+
       } catch (error) {
         console.log(error);
       }
