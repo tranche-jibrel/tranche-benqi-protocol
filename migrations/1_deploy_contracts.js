@@ -257,6 +257,7 @@ module.exports = async (deployer, network, accounts) => {
 
         const JBenQiInstance = await deployProxy(JAave, [JATinstance.address, JFCinstance.address, JTDeployer.address,
           QI_ADDRESS, QI_CONTROLLER, REWARD_TOKEN_ADDRESS], { from: factoryOwner });
+        console.log('BENQI_TRANCHE_ADDRESS=', JBenQiInstance.address)
 
         await JTDeployer.setBenQiAddresses(JBenQiInstance.address, JATinstance.address, { from: factoryOwner });
         console.log('deployer 1');
