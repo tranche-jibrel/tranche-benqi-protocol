@@ -26,6 +26,14 @@ contract AVAXGateway is IAVAXGateway, Ownable {
   }
 
   /**
+   * @dev set JAave contract address 
+   **/
+  function setJBenQiAddress(address _jBenQiAddress) external onlyOwner {
+    require(_jBenQiAddress != address(0), "WETHGateway: address not allowed");
+    jBenQiAddress = _jBenQiAddress;
+  }
+
+  /**
   * @dev redeem qiAVAX from BenQi contract (AVAX remains in this contract)
   * @param _amount amount of qiAVAX to redeem
   * @param _redeemType true or false, normally true

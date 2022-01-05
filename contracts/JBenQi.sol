@@ -47,7 +47,8 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
         trollerAddress = _comptrollAddress;
         rewardsToken = _rewardsToken;
         redeemTimeout = 3; //default
-        totalBlocksPerYear = 2102400; // same number like in BenQi protocol
+        // totalBlocksPerYear = 2102400; // same number like in BenQi protocol
+        totalBlocksPerYear = 31557600; // secondonds in 1 year
     }
 
     /**
@@ -67,7 +68,7 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
      * @param _trNum tranche number
      * @param _redemPerc redemption percentage (scaled by 1e4)
      * @param _redemTimeout redemption timeout, in blocks
-     * @param _blocksPerYear blocks per year (compound set it to 2102400)
+     * @param _blocksPerYear blocks per year (31.557.600 seconds in 1 year)
      */
     function setConstantsValues(uint256 _trNum, uint16 _redemPerc, uint32 _redemTimeout, uint256 _blocksPerYear) external onlyAdmins {
         trancheParameters[_trNum].redemptionPercentage = _redemPerc;
@@ -217,12 +218,12 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
         trancheParameters[tranchePairsCounter].qiTokenDecimals = _qiTokenDec;
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
         trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixedRpb;
-        trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.number;
+        trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.timestamp;
         // if we would like to have always 18 decimals
         trancheParameters[tranchePairsCounter].storedTrancheAPrice = 
             IJBenQiHelper(jBenQiHelperAddress).getBenQiPriceHelper(qiTokenContracts[_erc20Contract], _underlyingDec, _qiTokenDec);
 
-        trancheParameters[tranchePairsCounter].redemptionPercentage = 9990;  //default value 99.9%
+        trancheParameters[tranchePairsCounter].redemptionPercentage = 10000;  //default value 99.9%
 
         calcRPBFromPercentage(tranchePairsCounter); // initialize tranche A RPB
 
@@ -308,11 +309,14 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
      */
     function setTrancheAExchangeRate(uint256 _trancheNum) internal returns (uint256) {
         calcRPBFromPercentage(_trancheNum);
-        uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
-        if (deltaBlocks > 0) {
-            uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
+        // uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
+        uint256 deltaTime = (block.timestamp).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
+        if (deltaTime > 0) {
+            // uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
+            uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaTime);
             trancheParameters[_trancheNum].storedTrancheAPrice = (trancheParameters[_trancheNum].storedTrancheAPrice).add(deltaPrice);
-            trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
+            // trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
+            trancheParameters[_trancheNum].trancheALastActionBlock = block.timestamp;
         }
         return trancheParameters[_trancheNum].storedTrancheAPrice;
     }
