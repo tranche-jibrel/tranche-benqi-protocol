@@ -3,13 +3,14 @@ pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import './interfaces/IAVAXGateway.sol';
 import "./TransferAVAXHelper.sol";
 import "./interfaces/IQiAvax.sol";
 
-contract AVAXGateway is IAVAXGateway, Ownable {
+contract AVAXGateway is IAVAXGateway, Ownable, ReentrancyGuard {
   using SafeMath for uint256;
 
   IQiAvax internal immutable qiAVAXToken;
@@ -71,7 +72,7 @@ contract AVAXGateway is IAVAXGateway, Ownable {
    * @param _redeemType redeem type
    * @param _qiAVAXBal qiAVAX balance
    */
-  function withdrawAVAX(uint256 _amount, address _to, bool _redeemType, uint256 _qiAVAXBal) external override {
+  function withdrawAVAX(uint256 _amount, address _to, bool _redeemType, uint256 _qiAVAXBal) external override nonReentrant {
     require(msg.sender == jBenQiAddress, "AVAXGateway: caller is not JBenQi contract");
 
     uint256 oldAVAXBal = getAVAXBalance();
@@ -86,7 +87,7 @@ contract AVAXGateway is IAVAXGateway, Ownable {
     }
     uint256 newQiAVAXBal = getTokenBalance(address(qiAVAXToken));
     if (newQiAVAXBal > 0)
-       IERC20(address(qiAVAXToken)).transfer(_to, newQiAVAXBal);
+       SafeERC20.safeTransfer(IERC20(address(qiAVAXToken)), _to, newQiAVAXBal);
   }
 
   /**
