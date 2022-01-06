@@ -1,6 +1,5 @@
 .env
 *.txt
-unknown*
 old/
 build/
 coverage/

@@ -49,7 +49,7 @@ module.exports = {
       provider: function () {
         return new HDWalletProvider({ privateKeys: [process.env.mnemonic], providerOrUrl: process.env.PROVIDER, chainId: "0xa86a" })
       },
-      gas: 6000000,
+      gas: 5000000,
       gasPrice: 50000000000,
       network_id: "*",
       confirmations: 2,

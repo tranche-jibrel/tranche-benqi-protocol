@@ -1,0 +1,442 @@
+{
+  "manifestVersion": "3.1",
+  "impls": {
+    "887be5a92f13c9f5cb0ef810d0b65c943e12202239f15318c52e3676eb02b56e": {
+      "address": "0xE11aDED7fD4aaaA06Cbf1f332962C3fBfFe9f832",
+      "txHash": "0x4e962205b7d41d35608c982778d3e37950b01e62647c548bf63146210b7ed2c2",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:26"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:30"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:21"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:77"
+          },
+          {
+            "contract": "JTranchesDeployerStorage",
+            "label": "jBenQiAddress",
+            "type": "t_address",
+            "src": "JTranchesDeployerStorage.sol:13"
+          },
+          {
+            "contract": "JTranchesDeployerStorage",
+            "label": "jAdminToolsAddress",
+            "type": "t_address",
+            "src": "JTranchesDeployerStorage.sol:14"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    },
+    "4d967aa7916175f0b91099b04ab695d5fc72137ada0ebfc00135b0c09bb70cfb": {
+      "address": "0x41D2bBEE461Ae4AdFB850C523D60909c8fA474b7",
+      "txHash": "0x591c0337253b7add300aee8435eafa7bb0f897bdc8d7dffce6b1207c10be3618",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:26"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:30"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:21"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:77"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "../@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "adminToolsAddress",
+            "type": "t_address",
+            "src": "JBenQiStorage.sol:35"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "feesCollectorAddress",
+            "type": "t_address",
+            "src": "JBenQiStorage.sol:36"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "tranchesDeployerAddress",
+            "type": "t_address",
+            "src": "JBenQiStorage.sol:37"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "qiTokenAddress",
+            "type": "t_address",
+            "src": "JBenQiStorage.sol:38"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "trollerAddress",
+            "type": "t_address",
+            "src": "JBenQiStorage.sol:39"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "rewardsToken",
+            "type": "t_address",
+            "src": "JBenQiStorage.sol:40"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "tranchePairsCounter",
+            "type": "t_uint256",
+            "src": "JBenQiStorage.sol:42"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "totalBlocksPerYear",
+            "type": "t_uint256",
+            "src": "JBenQiStorage.sol:43"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "redeemTimeout",
+            "type": "t_uint32",
+            "src": "JBenQiStorage.sol:44"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "qiTokenContracts",
+            "type": "t_mapping(t_address,t_address)",
+            "src": "JBenQiStorage.sol:46"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "trancheAddresses",
+            "type": "t_mapping(t_uint256,t_struct(TrancheAddresses)7935_storage)",
+            "src": "JBenQiStorage.sol:47"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "trancheParameters",
+            "type": "t_mapping(t_uint256,t_struct(TrancheParameters)7950_storage)",
+            "src": "JBenQiStorage.sol:48"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "lastActivity",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "JBenQiStorage.sol:50"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "qiAVAXToken",
+            "type": "t_contract(IQiAvax)10981",
+            "src": "JBenQiStorage.sol:52"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "avaxGateway",
+            "type": "t_contract(IAVAXGateway)10310",
+            "src": "JBenQiStorage.sol:53"
+          },
+          {
+            "contract": "JBenQiStorage",
+            "label": "trancheDepositEnabled",
+            "type": "t_mapping(t_uint256,t_bool)",
+            "src": "JBenQiStorage.sol:56"
+          },
+          {
+            "contract": "JBenQiStorageV2",
+            "label": "incentivesControllerAddress",
+            "type": "t_address",
+            "src": "JBenQiStorage.sol:66"
+          },
+          {
+            "contract": "JBenQiStorageV2",
+            "label": "stakeCounterTrA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JBenQiStorage.sol:69"
+          },
+          {
+            "contract": "JBenQiStorageV2",
+            "label": "stakeCounterTrB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "src": "JBenQiStorage.sol:70"
+          },
+          {
+            "contract": "JBenQiStorageV2",
+            "label": "stakingDetailsTrancheA",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)8004_storage)))",
+            "src": "JBenQiStorage.sol:72"
+          },
+          {
+            "contract": "JBenQiStorageV2",
+            "label": "stakingDetailsTrancheB",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)8004_storage)))",
+            "src": "JBenQiStorage.sol:73"
+          },
+          {
+            "contract": "JBenQiStorageV2",
+            "label": "jBenQiHelperAddress",
+            "type": "t_address",
+            "src": "JBenQiStorage.sol:75"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)8004_storage)))": {
+            "label": "mapping(address => mapping(uint256 => mapping(uint256 => struct JBenQiStorageV2.StakingDetails)))"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(StakingDetails)8004_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct JBenQiStorageV2.StakingDetails))"
+          },
+          "t_mapping(t_uint256,t_struct(StakingDetails)8004_storage)": {
+            "label": "mapping(uint256 => struct JBenQiStorageV2.StakingDetails)"
+          },
+          "t_struct(StakingDetails)8004_storage": {
+            "label": "struct JBenQiStorageV2.StakingDetails",
+            "members": [
+              {
+                "label": "startTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_uint32": {
+            "label": "uint32"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)"
+          },
+          "t_mapping(t_uint256,t_struct(TrancheAddresses)7935_storage)": {
+            "label": "mapping(uint256 => struct JBenQiStorage.TrancheAddresses)"
+          },
+          "t_struct(TrancheAddresses)7935_storage": {
+            "label": "struct JBenQiStorage.TrancheAddresses",
+            "members": [
+              {
+                "label": "buyerCoinAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "qiTokenAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "ATrancheAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "BTrancheAddress",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_mapping(t_uint256,t_struct(TrancheParameters)7950_storage)": {
+            "label": "mapping(uint256 => struct JBenQiStorage.TrancheParameters)"
+          },
+          "t_struct(TrancheParameters)7950_storage": {
+            "label": "struct JBenQiStorage.TrancheParameters",
+            "members": [
+              {
+                "label": "trancheAFixedPercentage",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheALastActionBlock",
+                "type": "t_uint256"
+              },
+              {
+                "label": "storedTrancheAPrice",
+                "type": "t_uint256"
+              },
+              {
+                "label": "trancheACurrentRPB",
+                "type": "t_uint256"
+              },
+              {
+                "label": "redemptionPercentage",
+                "type": "t_uint16"
+              },
+              {
+                "label": "qiTokenDecimals",
+                "type": "t_uint8"
+              },
+              {
+                "label": "underlyingDecimals",
+                "type": "t_uint8"
+              }
+            ]
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_contract(IQiAvax)10981": {
+            "label": "contract IQiAvax"
+          },
+          "t_contract(IAVAXGateway)10310": {
+            "label": "contract IAVAXGateway"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "99c308da60ae5661a5bc6de6adf2c5a955e986b6f200927577668e385859276c": {
+      "address": "0x0FE1E8Ffa04ffb84CC49b8f99bFA3A8074A67eC3",
+      "txHash": "0x1629c09e08b33ba576bb09284d9f4d14a2ad95a5faf51b036e64871a2ee3647a",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:26"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:30"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:21"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:77"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    }
+  },
+  "admin": {
+    "address": "0x4f8a99F728eF9DFA377AcFfAc7188761616c099F",
+    "txHash": "0x21e956ba78b595cdf0d6f1bb87624d99372509de1fb0718b860197769ffb35b3"
+  }
+}
