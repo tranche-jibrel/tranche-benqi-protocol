@@ -198,7 +198,7 @@ module.exports = async (deployer, network, accounts) => {
         console.log(error);
       }
     }
-  } else if (network == "avaxmainnet" || network == 'avaxtest') {
+  } else if (network == "avaxmainnet" || network == 'development') {
     let {
       IS_UPGRADE,
       ADMIN_TOOLS,
@@ -285,53 +285,54 @@ module.exports = async (deployer, network, accounts) => {
         console.log('deployer 3');
 
         await JBenQiInstance.setQiAvaxContract(QIAVAX, { from: factoryOwner });
-        console.log('deployer 2');
+        console.log('deployer 4');
 
-        //tranche 1  AVAX_ADDRESS,qiWAVAX_ADDRESS, 0.2977%
-        await JBenQiInstance.addTrancheToProtocol(AVAX_ADDRESS, qiWAVAX_ADDRESS, "Tranche A - BENQI Avalanche AVAX", "aqiAVAX", "Tranche B - BENQI Avalanche AVAX", "bqiAVAX", web3.utils.toWei("0.02977", "ether"), 18, { from: factoryOwner });
+        //tranche 1  AVAX_ADDRESS,qiWAVAX_ADDRESS, 2.27%
+        await JBenQiInstance.setQiTokenContract(AVAX_ADDRESS, qiWAVAX_ADDRESS, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(AVAX_ADDRESS, "Tranche A - BENQI Avalanche AVAX", "aqiAVAX", "Tranche B - BENQI Avalanche AVAX", "bqiAVAX", web3.utils.toWei("0.0227", "ether"), 8, 18, { from: factoryOwner });
         await JBenQiInstance.setTrancheDeposit(0, true, { from: factoryOwner });
         console.log('added tranche 1')
 
-        //tranche 2  WETH_ADDRESS, qiWETH_ADDRESS, 0.0%
+        //tranche 2  WETH_ADDRESS, qiWETH_ADDRESS, 0.53%
         await JBenQiInstance.setQiTokenContract(WETH_ADDRESS, qiWETH_ADDRESS, { from: factoryOwner });
-        await JBenQiInstance.addTrancheToProtocol(WETH_ADDRESS, qiWETH_ADDRESS, "Tranche A - BENQI Avalanche WETH", "aqiWETH", "Tranche B - BENQI Avalanche WETH", "bqiWETH", web3.utils.toWei("0.00", "ether"), 18, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(WETH_ADDRESS, "Tranche A - BENQI Avalanche WETH", "aqiWETH", "Tranche B - BENQI Avalanche WETH", "bqiWETH", web3.utils.toWei("0.0053", "ether"), 8, 18, { from: factoryOwner });
         await JBenQiInstance.setTrancheDeposit(1, true, { from: factoryOwner });
         console.log('added tranche 2')
 
-        //tranche 3  WBTC_ADDRESS, qiWBTC_ADDRESS, 0.0%
+        //tranche 3  WBTC_ADDRESS, qiWBTC_ADDRESS, 0.98%
         await JBenQiInstance.setQiTokenContract(WBTC_ADDRESS, qiWBTC_ADDRESS, { from: factoryOwner });
-        await JBenQiInstance.addTrancheToProtocol(WBTC_ADDRESS, qiWBTC_ADDRESS, "Tranche A - BENQI Avalanche WBTC", "aqiWBTC", "Tranche B - BENQI Avalanche WBTC", "bqiWBTC", web3.utils.toWei("0.00", "ether"), 8, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(WBTC_ADDRESS, "Tranche A - BENQI Avalanche WBTC", "aqiWBTC", "Tranche B - BENQI Avalanche WBTC", "bqiWBTC", web3.utils.toWei("0.0098", "ether"), 8, 8, { from: factoryOwner });
         await JBenQiInstance.setTrancheDeposit(2, true, { from: factoryOwner });
         console.log('added tranche 3');
 
-        //tranche 4  DAI_ADDRESS, qiDAI_ADDRESS, 1.5912%
+        //tranche 4  DAI_ADDRESS, qiDAI_ADDRESS, 2.88%
         await JBenQiInstance.setQiTokenContract(DAI_ADDRESS, qiDAI_ADDRESS, { from: factoryOwner });
-        await JBenQiInstance.addTrancheToProtocol(DAI_ADDRESS, qiDAI_ADDRESS, "Tranche A - BENQI Avalanche DAI", "aqiDAI", "Tranche B - BENQI Avalanche DAI", "bqiDAI", web3.utils.toWei("0.015912", "ether"), 18, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(DAI_ADDRESS, "Tranche A - BENQI Avalanche DAI", "aqiDAI", "Tranche B - BENQI Avalanche DAI", "bqiDAI", web3.utils.toWei("0.0288", "ether"), 8, 18, { from: factoryOwner });
         await JBenQiInstance.setTrancheDeposit(3, true, { from: factoryOwner });
         console.log('added tranche 4');
 
-        //tranche 5  USDT_ADDRESS, qiUSDT_ADDRESS,0%
+        //tranche 5  USDT_ADDRESS, qiUSDT_ADDRESS,2.59%
         await JBenQiInstance.setQiTokenContract(USDT_ADDRESS, qiUSDT_ADDRESS, { from: factoryOwner });
-        await JBenQiInstance.addTrancheToProtocol(USDT_ADDRESS, qiUSDT_ADDRESS, "Tranche A - BENQI Avalanche USDT", "aqiUSDT", "Tranche B - BENQI Avalanche USDT", "bqiUSDT", web3.utils.toWei("0.00", "ether"), 6, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(USDT_ADDRESS, "Tranche A - BENQI Avalanche USDT", "aqiUSDT", "Tranche B - BENQI Avalanche USDT", "bqiUSDT", web3.utils.toWei("0.0259", "ether"), 8, 6, { from: factoryOwner });
         await JBenQiInstance.setTrancheDeposit(4, true, { from: factoryOwner });
         console.log('added tranche 5');
 
 
-        //tranche 6 USDC_ADDRESS, qiUSDC_ADDRESS,0.5695%
+        //tranche 6 USDC_ADDRESS, qiUSDC_ADDRESS,2.57%
         await JBenQiInstance.setQiTokenContract(USDC_ADDRESS, qiUSDC_ADDRESS, { from: factoryOwner });
-        await JBenQiInstance.addTrancheToProtocol(USDC_ADDRESS, qiUSDC_ADDRESS, "Tranche A - BENQI Avalanche USDC", "aqiUSDC", "Tranche B - BENQI Avalanche USDC", "bqiUSDC", web3.utils.toWei("0.005695", "ether"), 6, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(USDC_ADDRESS, "Tranche A - BENQI Avalanche USDC", "aqiUSDC", "Tranche B - BENQI Avalanche USDC", "bqiUSDC", web3.utils.toWei("0.0257", "ether"), 8, 6, { from: factoryOwner });
         await JBenQiInstance.setTrancheDeposit(5, true, { from: factoryOwner });
         console.log('added tranche 6');
 
-        //tranche 7 LINK_ADDRESS, qiLINK_ADDRESS,0.0%
+        //tranche 7 LINK_ADDRESS, qiLINK_ADDRESS,1.15%
         await JBenQiInstance.setQiTokenContract(LINK_ADDRESS, qiLINK_ADDRESS, { from: factoryOwner });
-        await JBenQiInstance.addTrancheToProtocol(LINK_ADDRESS, qiLINK_ADDRESS, "Tranche A - BENQI Avalanche LINK", "aqiLINK", "Tranche B - BENQI Avalanche LINK", "bqiLINK", web3.utils.toWei("0.00", "ether"), 18, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(LINK_ADDRESS, "Tranche A - BENQI Avalanche LINK", "aqiLINK", "Tranche B - BENQI Avalanche LINK", "bqiLINK", web3.utils.toWei("0.0115", "ether"), 8, 18, { from: factoryOwner });
         await JBenQiInstance.setTrancheDeposit(6, true, { from: factoryOwner });
         console.log('added tranche 7');
 
-        //tranche 8 QI_ADDRESS, qiQI_ADDRESS,0.0%
+        //tranche 8 QI_ADDRESS, qiQI_ADDRESS,17.62%
         await JBenQiInstance.setQiTokenContract(QI_ADDRESS, qiQI_ADDRESS, { from: factoryOwner });
-        await JBenQiInstance.addTrancheToProtocol(QI_ADDRESS, qiQI_ADDRESS, "Tranche A - BENQI Avalanche QI", "aqiQI", "Tranche B - BENQI Avalanche QI", "bqiQI", web3.utils.toWei("0.00", "ether"), 18, { from: factoryOwner });
+        await JBenQiInstance.addTrancheToProtocol(QI_ADDRESS, "Tranche A - BENQI Avalanche QI", "aqiQI", "Tranche B - BENQI Avalanche QI", "bqiQI", web3.utils.toWei("0.1762", "ether"), 8, 18, { from: factoryOwner });
         await JBenQiInstance.setTrancheDeposit(7, true, { from: factoryOwner });
         console.log('added tranche 8');
 
