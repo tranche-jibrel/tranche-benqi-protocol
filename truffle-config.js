@@ -6,7 +6,9 @@ module.exports = {
     development: {
       host: "127.0.0.1",     // Localhost (default: none)
       port: 8545,            // Standard Ethereum port (default: none)
-      network_id: "*",       // Any network (default: none)
+      network_id: "*",  
+      gas: 8000000,
+      gasPrice: 20000000000,     // Any network (default: none)
     },
     fuji: {
       networkCheckTimeout: 1000000,
@@ -35,13 +37,31 @@ module.exports = {
       confirmations: 2,
       skipDryRun: true
     },
+    avaxtest: {
+      provider: function () {
+        return new HDWalletProvider({ privateKeys: [process.env.mnemonic], providerOrUrl: process.env.PROVIDER, chainId: "0xa869" })
+      },
+      gas: 6000000,
+      gasPrice: 225000000000,
+      network_id: "*",
+      confirmations: 2,
+      skipDryRun: true
+    },
+    avaxmainnet: {
+      provider: function () {
+        return new HDWalletProvider({ privateKeys: [process.env.mnemonic], providerOrUrl: process.env.PROVIDER, chainId: "0xa86a" })
+      },
+      gas: 6000000,
+      gasPrice: 50000000000,
+      network_id: "*",
+      confirmations: 2,
+      skipDryRun: true
+    },
   },
-
   plugins: ['truffle-contract-size',
     'solidity-coverage',
     'truffle-plugin-verify',
   ],
-
   // Set default mocha options here, use special reporters etc.
   mocha: {
     reporter: 'eth-gas-reporter',
@@ -67,7 +87,7 @@ module.exports = {
   },
   db: {
     enabled: false
-  }, 
+  },
   api_keys: {
     etherscan: `${process.env.ETHERSCAN_KEY}`,
     bscscan: `${process.env.BSCSCAN_KEY}`,

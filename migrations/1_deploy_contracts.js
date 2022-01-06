@@ -42,7 +42,7 @@ module.exports = async (deployer, network, accounts) => {
   const QITOKEN = "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5";
   const QIQI = "0x35Bd6aedA81a7E5FC7A7832490e71F757b0cD9Ce";
 
-  if (network == "development") {
+  if (network == "development1") {
     const tokenOwner = accounts[0];
 
     const mySLICEinstance = await deployProxy(mySLICE, [MYERC20_TOKEN_SUPPLY], { from: tokenOwner });
@@ -198,7 +198,7 @@ module.exports = async (deployer, network, accounts) => {
         console.log(error);
       }
     }
-  } else if (network == "avaxmainnet") {
+  } else if (network == "avaxmainnet" || network == 'avaxtest') {
     let {
       IS_UPGRADE,
       ADMIN_TOOLS,
@@ -227,6 +227,7 @@ module.exports = async (deployer, network, accounts) => {
     } = process.env;
     const accounts = await web3.eth.getAccounts();
     const factoryOwner = accounts[0];
+    console.log(factoryOwner)
     if (IS_UPGRADE == 'true') {
       console.log('contracts are being upgraded');
     } else {
@@ -255,7 +256,7 @@ module.exports = async (deployer, network, accounts) => {
         await JATinstance.addAdmin(JTDeployer.address, { from: factoryOwner })
         console.log('admin added 1');
 
-        const JBenQiInstance = await deployProxy(JAave, [JATinstance.address, JFCinstance.address, JTDeployer.address,
+        const JBenQiInstance = await deployProxy(JBenQi, [JATinstance.address, JFCinstance.address, JTDeployer.address,
           QI_ADDRESS, QI_CONTROLLER, REWARD_TOKEN_ADDRESS], { from: factoryOwner });
         console.log('BENQI_TRANCHE_ADDRESS=', JBenQiInstance.address)
 
@@ -271,6 +272,7 @@ module.exports = async (deployer, network, accounts) => {
           console.log('WETH_GATEWAY', JWGinstance.address);
         } else {
           JWGinstance = await AvaxGateway.at(WETH_GATEWAY)
+          await JWGinstance.setJBenQiAddress(JBenQiInstance.address);
         }
 
         await JBenQiInstance.setAVAXGateway(JWGinstance.address, { from: factoryOwner });
