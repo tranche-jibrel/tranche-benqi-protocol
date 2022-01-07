@@ -6,3 +6,4 @@ build/
 coverage/
 node_modules/
 coverage.json
+flatten/
