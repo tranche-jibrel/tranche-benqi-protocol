@@ -42,7 +42,7 @@ module.exports = async (deployer, network, accounts) => {
   const QITOKEN = "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5";
   const QIQI = "0x35Bd6aedA81a7E5FC7A7832490e71F757b0cD9Ce";
 
-  if (network == "development1") {
+  if (network == "development") {
     const tokenOwner = accounts[0];
 
     const mySLICEinstance = await deployProxy(mySLICE, [MYERC20_TOKEN_SUPPLY], { from: tokenOwner });
@@ -198,7 +198,7 @@ module.exports = async (deployer, network, accounts) => {
         console.log(error);
       }
     }
-  } else if (network == "avaxmainnet" || network == 'development') {
+  } else if (network == "avaxmainnet" || network == 'development1') {
     let {
       IS_UPGRADE,
       ADMIN_TOOLS,

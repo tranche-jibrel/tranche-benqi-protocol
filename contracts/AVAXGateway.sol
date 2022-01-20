@@ -98,7 +98,7 @@ contract AVAXGateway is IAVAXGateway, Ownable, ReentrancyGuard {
    * @param _amount amount to send
    */
   function emergencyTokenTransfer(address _token, address _to, uint256 _amount) external onlyOwner {
-    IERC20(_token).transfer(_to, _amount);
+    SafeERC20.safeTransfer(IERC20(_token), _to, _amount);
   }
 
   /**

@@ -166,11 +166,11 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
      */
     function getCompoundSupplyRPB(uint256 _trancheNum) external view returns (uint256) {
         IQiErc20 qiToken = IQiErc20(qiTokenContracts[trancheAddresses[_trancheNum].buyerCoinAddress]);
-        return qiToken.supplyRatePerBlock();
+        return qiToken.supplyRatePerTimestamp();
     }
 
     /**
-     * @dev check if a qiToken is allowed or not
+     * @dev set decimals for tranche tokens
      * @param _trancheNum tranche number
      * @param _qiTokenDec qiToken decimals
      * @param _underlyingDec underlying token decimals
@@ -198,12 +198,12 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
      * @param _symbolA tranche A token symbol
      * @param _nameB tranche B token name
      * @param _symbolB tranche B token symbol
-     * @param _fixedRpb tranche A percentage fixed compounded interest per year
+     * @param _fixPercentage tranche A percentage fixed compounded interest per year
      * @param _qiTokenDec qiToken decimals
      * @param _underlyingDec underlying token decimals
      */
     function addTrancheToProtocol(address _erc20Contract, string memory _nameA, string memory _symbolA, string memory _nameB, 
-                string memory _symbolB, uint256 _fixedRpb, uint8 _qiTokenDec, uint8 _underlyingDec) external onlyAdmins nonReentrant {
+                string memory _symbolB, uint256 _fixPercentage, uint8 _qiTokenDec, uint8 _underlyingDec) external onlyAdmins nonReentrant {
         require(tranchesDeployerAddress != address(0), "!TrDepl");
         require(isQiTokenAllowed(_erc20Contract), "!Allow");
 
@@ -217,7 +217,7 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
         
         trancheParameters[tranchePairsCounter].qiTokenDecimals = _qiTokenDec;
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
-        trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixedRpb;
+        trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixPercentage;
         trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.timestamp;
         // if we would like to have always 18 decimals
         trancheParameters[tranchePairsCounter].storedTrancheAPrice = 
@@ -322,14 +322,12 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
     }
 
     /**
-     * @dev get Tranche A exchange rate (tokens with 18 decimals)
+     * @dev get Tranche A RPB for percentage (scaled by 18 decimals)
      * @param _trancheNum tranche number
      * @return tranche A token current price
      */
     function calcRPBFromPercentage(uint256 _trancheNum) public returns (uint256) {
-        // if normalized price in tranche A price, everything should be scaled to 1e18 
-        trancheParameters[_trancheNum].trancheACurrentRPB = trancheParameters[_trancheNum].storedTrancheAPrice
-            .mul(trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
+        trancheParameters[_trancheNum].trancheACurrentRPB = (trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
         return trancheParameters[_trancheNum].trancheACurrentRPB;
     }
 
@@ -606,8 +604,8 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
             diffBal = getEthBalance().sub(oldBal);
             userAmount = diffBal.mul(redeemPerc).div(PERCENT_DIVIDER);
             TransferAVAXHelper.safeTransferAVAX(msg.sender, userAmount);
-            feesAmount = diffBal.sub(userAmount);
-            if (feesAmount > 0) {
+            if (diffBal > userAmount && feesAmount > 0) {
+                feesAmount = diffBal.sub(userAmount);
                 // transfer fees to JFeesCollector
                 TransferAVAXHelper.safeTransferAVAX(feesCollectorAddress, feesAmount);
             }   
@@ -731,8 +729,8 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
             diffBal = getEthBalance().sub(oldBal);
             userAmount = diffBal.mul(redeemPerc).div(PERCENT_DIVIDER);
             TransferAVAXHelper.safeTransferAVAX(msg.sender, userAmount);
-            feesAmount = diffBal.sub(userAmount);
-            if (feesAmount > 0) {
+            if (diffBal > userAmount && feesAmount > 0) {
+                feesAmount = diffBal.sub(userAmount);
                 // transfer fees to JFeesCollector
                 TransferAVAXHelper.safeTransferAVAX(feesCollectorAddress, feesAmount);
             }   

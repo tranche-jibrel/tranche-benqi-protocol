@@ -135,7 +135,7 @@ Other info can be found here: https://docs.tranche.finance/tranchefinance/slice-
     <tbody>
         <tr>
             <td>AVAXGateway</td>
-            <td><code>2.65</code></td>
+            <td><code>3.39</code></td>
             <td>Avalanche coins gateway, useful when dealing with AVAX. Not upgradeable.</td>
         </tr>
         <tr>
@@ -160,7 +160,7 @@ Other info can be found here: https://docs.tranche.finance/tranchefinance/slice-
         </tr>
         <tr>
             <td>JBenQi</td>
-            <td><code>20.87</code></td>
+            <td><code>20.89</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with BenQi to have interest rates and other informations to give tokens the price they should have block by block. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens. Upgradeable.</td>
         </tr>
         <tr>
@@ -205,7 +205,7 @@ Other info can be found here: https://docs.tranche.finance/tranchefinance/slice-
         </tr>
         <tr>
             <td>MarketsHelper</td>
-            <td><code>3.97</code></td>
+            <td><code>4.29</code></td>
             <td>Contract for modelling markets</td>
         </tr>
         <tr>
