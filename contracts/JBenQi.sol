@@ -17,7 +17,6 @@ import "./interfaces/IQiErc20.sol";
 import "./interfaces/IComptrollerLensInterface.sol";
 import "./JBenQiStorage.sol";
 import "./TransferAVAXHelper.sol";
-import "./interfaces/IJBenQiHelper.sol";
 
 
 contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorageV2, IJBenQi {
@@ -78,14 +77,6 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
      */
     function setAVAXGateway(address _avaxGateway) external onlyAdmins {
         avaxGateway = IAVAXGateway(_avaxGateway);
-    }
-
-    /**
-     * @dev set incentive rewards address
-     * @param _helper JBenQi helper contract address
-     */
-    function setBenQiHelperAddress(address _helper) external onlyAdmins {
-        jBenQiHelperAddress = _helper;
     }
 
     /**
@@ -170,6 +161,56 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
     }
 
     /**
+     * @dev get qiToken stored exchange rate from compound contract
+     * @param _qiTokenAddress qiToken address
+     * @return exchRateMantissa exchange rate qiToken mantissa
+     */
+    function getQiTokenExchangeRate(address _qiTokenAddress) public view returns (uint256 exchRateMantissa) {
+        // Amount of current exchange rate from qiToken to underlying
+        return exchRateMantissa = IQiErc20(_qiTokenAddress).exchangeRateStored(); // it returns something like 210615675702828777787378059 (cDAI contract) or 209424757650257 (cUSDT contract)
+    }
+
+    /**
+     * @dev get compound mantissa
+     * @param _underDecs underlying decimals
+     * @param _qiTokenDecs qiToken decimals
+     * @return mantissa tranche mantissa (from 16 to 28 decimals)
+     */
+    function getMantissa(uint256 _underDecs, uint256 _qiTokenDecs) public pure returns (uint256 mantissa) {
+        mantissa = (uint256(_underDecs)).add(18).sub(uint256(_qiTokenDecs));
+        return mantissa;
+    }
+
+    /**
+     * @dev get compound pure price for a single tranche
+     * @param _qiTokenAddress qiToken address
+     * @return purePrice protocol current pure price
+     */
+    function getBenQiPurePrice(address _qiTokenAddress) public view returns (uint256 purePrice) {
+        purePrice = getQiTokenExchangeRate(_qiTokenAddress);
+        return purePrice;
+    }
+
+    /**
+     * @dev get compound price for a single tranche scaled by 1e18
+     * @param _qiTokenAddress qiToken address
+     * @param _underDecs underlying decimals
+     * @param _qiTokenDecs qiToken decimalsr
+     * @return normPrice compound current normalized price
+     */
+    function getBenQiPrice(address _qiTokenAddress, uint256 _underDecs, uint256 _qiTokenDecs) public view returns (uint256 normPrice) {
+        normPrice = getBenQiPurePrice(_qiTokenAddress);
+
+        uint256 mantissa = getMantissa(_underDecs, _qiTokenDecs);
+        if (mantissa < 18) {
+            normPrice = normPrice.mul(10 ** (uint256(18).sub(mantissa)));
+        } else {
+            normPrice = normPrice.div(10 ** (mantissa.sub(uint256(18))));
+        }
+        return normPrice;
+    }
+
+    /**
      * @dev add tranche in protocol
      * @param _erc20Contract token contract address (0x0000000000000000000000000000000000000000 if eth)
      * @param _nameA tranche A token name
@@ -198,8 +239,7 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
         trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixPercentage;
         trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.timestamp;
         // if we would like to have always 18 decimals
-        trancheParameters[tranchePairsCounter].storedTrancheAPrice = 
-            IJBenQiHelper(jBenQiHelperAddress).getBenQiPriceHelper(qiTokenContracts[_erc20Contract], _underlyingDec, _qiTokenDec);
+        trancheParameters[tranchePairsCounter].storedTrancheAPrice = getBenQiPrice(qiTokenContracts[_erc20Contract], _underlyingDec, _qiTokenDec);
 
         trancheParameters[tranchePairsCounter].redemptionPercentage = 10000;  //default value 99.9%
 
@@ -345,12 +385,12 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
         address qiTokenAddress = trancheAddresses[_trancheNum].qiTokenAddress;
         uint256 underDecs = uint256(trancheParameters[_trancheNum].underlyingDecimals);
         uint256 qiTokenDecs = uint256(trancheParameters[_trancheNum].qiTokenDecimals);
-        uint256 compNormPrice = IJBenQiHelper(jBenQiHelperAddress).getBenQiPriceHelper(qiTokenAddress, underDecs, qiTokenDecs);
-        uint256 mantissa = IJBenQiHelper(jBenQiHelperAddress).getMantissaHelper(underDecs, qiTokenDecs);
+        uint256 compNormPrice = getBenQiPrice(qiTokenAddress, underDecs, qiTokenDecs);
+        uint256 mantissa = getMantissa(underDecs, qiTokenDecs);
         if (mantissa < 18) {
             compNormPrice = compNormPrice.div(10 ** (uint256(18).sub(mantissa)));
         } else {
-            compNormPrice = IJBenQiHelper(jBenQiHelperAddress).getBenQiPurePriceHelper(qiTokenAddress);
+            compNormPrice = getBenQiPurePrice(qiTokenAddress);
         }
         uint256 totProtSupply = getTokenBalance(trancheAddresses[_trancheNum].qiTokenAddress);
         return totProtSupply.mul(compNormPrice).div(1e18);
@@ -423,7 +463,6 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
             SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(underTokenAddress), msg.sender, address(this), _amount);
             // transfer DAI to Coompound receiving cDai
             sendErc20ToCompound(underTokenAddress, _amount);
-            // IJBenQiHelper(jBenQiHelperAddress).sendErc20ToCompoundHelper(underTokenAddress, qiTokenAddress, _amount);
         }
         uint256 newCompTokenBalance = getTokenBalance(qiTokenAddress);
         // set amount of tokens to be minted calculate taToken amount via taToken price
@@ -541,7 +580,6 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
             SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(underTokenAddress), msg.sender, address(this), _amount);
             // transfer DAI to Couompound receiving cDai
             sendErc20ToCompound(underTokenAddress, _amount);
-            // IJBenQiHelper(jBenQiHelperAddress).sendErc20ToCompoundHelper(underTokenAddress, qiTokenAddress, _amount);
         }
         uint256 newCompTokenBalance = getTokenBalance(qiTokenAddress);
         if (newCompTokenBalance > prevCompTokenBalance) {
@@ -639,7 +677,6 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
             oldBal = getTokenBalance(underTokenAddress);
             require(redeemQiErc20Tokens(underTokenAddress, _qiTokenAmount, true) == 0, "!qiTokenAnswer");
             // address qiToken = qiTokenContracts[trancheAddresses[_trancheNum].buyerCoinAddress];
-            // uint256 compRetCode = IJBenQiHelper(jBenQiHelperAddress).redeemQiErc20TokensHelper(qiToken, _qiTokenAmount, false);
             // require(compRetCode == 0, "!qiTokenAnswer");
             diffBal = getTokenBalance(underTokenAddress);
             SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(underTokenAddress), feesCollectorAddress, diffBal);

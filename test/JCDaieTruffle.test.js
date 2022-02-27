@@ -24,7 +24,6 @@ const JAdminTools = artifacts.require('JAdminTools');
 const JFeesCollector = artifacts.require('JFeesCollector');
 
 const JBenQi = artifacts.require('JBenQi');
-const JBenQiHelper = artifacts.require('JBenQiHelper');
 const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 
 const JTrancheAToken = artifacts.require('JTrancheAToken');
@@ -93,11 +92,6 @@ contract("DAI.e JBenQi", function (accounts) {
     expect(jBQContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jBQContract.address);
 
-    jCompHelperContract = await JBenQiHelper.deployed();
-    expect(jCompHelperContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(jCompHelperContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(jCompHelperContract.address);
-
     trParams0 = await jBQContract.trancheAddresses(0);
     ethTrAContract = await JTrancheAToken.at(trParams0.ATrancheAddress);
     expect(ethTrAContract.address).to.be.not.equal(ZERO_ADDRESS);
@@ -125,7 +119,7 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("is Dai allowed in JBenQi: " + await jBQContract.isQiTokenAllowed(DAIE_ADDRESS));
     trAddresses = await jBQContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jBQContract.trancheParameters(1);
-    console.log((await jCompHelperContract.getBenQiPriceHelper(trAddresses[1], trPars[6], trPars[5])).toString());
+    console.log((await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5])).toString());
     trPar = await jBQContract.trancheParameters(1);
     console.log("param tranche A: " + JSON.stringify(trPar, ["trancheAFixedPercentage", "trancheALastActionBlock", "storedTrancheAPrice", 
         "trancheACurrentRPB", "redemptionPercentage", "qiTokenDecimals", "underlyingDecimals"]));
@@ -154,8 +148,8 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("TrA price: " + fromWei(trPar[2].toString()));
     trAddresses = await jBQContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jBQContract.trancheParameters(1);
-    console.log("BenQi Price: " + await jCompHelperContract.getBenQiPriceHelper(trAddresses[1], trPars[6], trPars[5]));
-    // console.log("BenQi Price: " + await jCompHelperContract.getBenQiPriceHelper(1));
+    console.log("BenQi Price: " + await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5]));
+    // console.log("BenQi Price: " + await jBQContract.getBenQiPrice(1));
     console.log("BenQi TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));
     console.log("BenQi total Value: " + fromWei(await jBQContract.getTotalValue(1)));
   });
@@ -184,7 +178,7 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, 0)));
     trAddresses = await jBQContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jBQContract.trancheParameters(1);
-    console.log("BenQi Price: " + await jCompHelperContract.getBenQiPriceHelper(trAddresses[1], trPars[6], trPars[5]));
+    console.log("BenQi Price: " + await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5]));
     trPar = await jBQContract.trancheParameters(1);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
     console.log("BenQi TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));

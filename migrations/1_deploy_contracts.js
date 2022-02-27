@@ -1,22 +1,15 @@
 require('dotenv').config();
 const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
 
-var Chainlink1 = artifacts.require("./mocks/Chainlink1.sol");
-var Chainlink2 = artifacts.require("./mocks/Chainlink2.sol");
-
 var JAdminTools = artifacts.require("JAdminTools.sol");
 var JFeesCollector = artifacts.require("JFeesCollector.sol");
 var JBenQi = artifacts.require('JBenQi');
-var JBenQiHelper = artifacts.require('JBenQiHelper');
 var JTranchesDeployer = artifacts.require('JTranchesDeployer');
 
 var JTrancheAToken = artifacts.require('JTrancheAToken');
 var JTrancheBToken = artifacts.require('JTrancheBToken');
 
 var AvaxGateway = artifacts.require('AVAXGateway');
-
-var MarketHelper = artifacts.require("MarketHelper.sol");
-var PriceHelper = artifacts.require("PriceHelper.sol");
 
 module.exports = async (deployer, network, accounts) => {
   const MYERC20_TOKEN_SUPPLY = 5000000;
@@ -40,9 +33,8 @@ module.exports = async (deployer, network, accounts) => {
   const QIQI = "0x35Bd6aedA81a7E5FC7A7832490e71F757b0cD9Ce";
 
   if (network == "development") {
-    const tokenOwner = accounts[0];
-
     const factoryOwner = accounts[0];
+    
     const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
     console.log('JAdminTools Deployed: ', JATinstance.address);
 
@@ -66,11 +58,6 @@ module.exports = async (deployer, network, accounts) => {
     await JTDeployer.setBenQiAddresses(JBQInstance.address, JATinstance.address, { from: factoryOwner });
 
     await JBQInstance.setAVAXGateway(JEGinstance.address, { from: factoryOwner });
-
-    const JBQHelper = await deployProxy(JBenQiHelper, [/*JBQInstance.address*/], { from: factoryOwner });
-    console.log("JC Helper: " + JBQHelper.address);
-
-    await JBQInstance.setBenQiHelperAddress(JBQHelper.address)
 
     await JBQInstance.setQiAvaxContract(QIAVAX, { from: factoryOwner });
     await JBQInstance.addTrancheToProtocol(ZERO_ADDRESS, "Avax Tranche A Token", "JAA", "Avax Tranche B Token", "JAB", web3.utils.toWei("0.04", "ether"), 8, 18, { from: factoryOwner });
@@ -98,26 +85,6 @@ module.exports = async (deployer, network, accounts) => {
     let UsdtTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
     console.log("USDT Tranche B Token Address: " + UsdtTrB.address);
     await JBQInstance.setTrancheDeposit(2, true); // enabling deposit
-
-    const myChainlink1Inst = await deployProxy(Chainlink1, [], {
-      from: factoryOwner
-    });
-    console.log('myChainlink1 Deployed: ', myChainlink1Inst.address);
-
-    const myChainlink2Inst = await deployProxy(Chainlink2, [], {
-      from: factoryOwner
-    });
-    console.log('myChainlink2 Deployed: ', myChainlink2Inst.address);
-
-    const myPriceHelperInst = await deployProxy(PriceHelper, [], {
-      from: factoryOwner
-    });
-    console.log('myPriceHelper Deployed: ', myPriceHelperInst.address);
-
-    const myMktHelperinstance = await deployProxy(MarketHelper, [], {
-      from: factoryOwner
-    });
-    console.log('myMktHelperinstance Deployed: ', myMktHelperinstance.address);
 
   } else if (network == "fuji") {
     let {
@@ -148,12 +115,6 @@ module.exports = async (deployer, network, accounts) => {
         console.log(`COMPOUND_TRANCHE_ADDRESS=${JBenQiInstance.address}`);
         compoundDeployer.setJBenQiAddress(JBenQiInstance.address);
         console.log('compound deployer 1');
-
-        const JBQHelper = await deployProxy(JBenQiHelper, [], { from: factoryOwner });
-        console.log("JC Helper: " + JBQHelper.address);
-
-        await JBenQiInstance.setJBenQiHelperAddress(JBQHelper.address)
-
 
         await JBenQiInstance.setCTokenContract(TRANCHE_ONE_TOKEN_ADDRESS, TRANCHE_ONE_CTOKEN_ADDRESS, { from: factoryOwner });
         console.log('compound deployer 2');
@@ -188,7 +149,6 @@ module.exports = async (deployer, network, accounts) => {
       ADMIN_TOOLS,
       FEE_COLLECTOR_ADDRESS,
       WETH_GATEWAY,
-      MOCK_INCENTIVE_CONTROLLER,
       WAVAX_ADDRESS,
       QI_CONTROLLER,
       REWARD_TOKEN_ADDRESS,
@@ -262,12 +222,6 @@ module.exports = async (deployer, network, accounts) => {
         await JBenQiInstance.setAVAXGateway(JWGinstance.address, { from: factoryOwner });
         console.log('deployer 2');
 
-        const JBQHelper = await deployProxy(JBenQiHelper, [], { from: factoryOwner });
-        console.log("BENQI_HELPER: " + JBQHelper.address);
-
-        await JBenQiInstance.setBenQiHelperAddress(JBQHelper.address)
-        console.log('deployer 3');
-
         await JBenQiInstance.setQiAvaxContract(QIAVAX, { from: factoryOwner });
         console.log('deployer 4');
 
@@ -319,16 +273,6 @@ module.exports = async (deployer, network, accounts) => {
         await JBenQiInstance.addTrancheToProtocol(QI_ADDRESS, "Tranche A - BENQI Avalanche QI", "aqiQI", "Tranche B - BENQI Avalanche QI", "bqiQI", web3.utils.toWei("0.1762", "ether"), 8, 18, { from: factoryOwner });
         await JBenQiInstance.setTrancheDeposit(7, true, { from: factoryOwner });
         console.log('added tranche 8');
-
-        if (!MOCK_INCENTIVE_CONTROLLER) {
-          const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
-          console.log("MOCK_INCENTIVE_CONTROLLER " + JIController.address);
-          await JBenQiInstance.setIncentivesControllerAddress(JIController.address);
-          console.log('incentive controller setup')
-        } else {
-          await JBenQiInstance.setIncentivesControllerAddress(MOCK_INCENTIVE_CONTROLLER);
-          console.log('incentive controller setup')
-        }
 
         trParams = await JBenQiInstance.trancheAddresses(0);
         let tranche1A = await JTrancheAToken.at(trParams.ATrancheAddress);

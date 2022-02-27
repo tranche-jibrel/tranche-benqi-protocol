@@ -22,7 +22,6 @@ const JAdminTools = artifacts.require('JAdminTools');
 const JFeesCollector = artifacts.require('JFeesCollector');
 
 const JBenQi = artifacts.require('JBenQi');
-const JBenQiHelper = artifacts.require('JBenQiHelper');
 const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 
 const JTrancheAToken = artifacts.require('JTrancheAToken');
@@ -74,14 +73,6 @@ contract("AVAX JBenQi", function (accounts) {
     expect(jBQContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jBQContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jBQContract.address);
-    // await jBQContract.setRedemptionTimeout(0, {
-    //   from: accounts[0]
-    // });
-
-    jBQHelperContract = await JBenQiHelper.deployed();
-    expect(jBQHelperContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(jBQHelperContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(jBQHelperContract.address);
 
     trParams0 = await jBQContract.trancheAddresses(0);
     ethTrAContract = await JTrancheAToken.at(trParams0.ATrancheAddress);
@@ -118,7 +109,7 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("User1 Avax balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
     trAddresses = await jBQContract.trancheAddresses(0); //.cTokenAddress;
     trPars = await jBQContract.trancheParameters(0);
-    console.log("BenQi Price: " + await jBQHelperContract.getBenQiPriceHelper(trAddresses[1], trPars[6], trPars[5]));
+    console.log("BenQi Price: " + await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5]));
     trPar = await jBQContract.trancheParameters(0);
     console.log("param tranche A: " + JSON.stringify(trPar, ["trancheAFixedPercentage", "trancheALastActionBlock", "storedTrancheAPrice", 
         "trancheACurrentRPB", "redemptionPercentage", "qiTokenDecimals", "underlyingDecimals"]));
@@ -144,7 +135,7 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("TrA price: " + fromWei(trPar[2].toString()));
     trAddresses = await jBQContract.trancheAddresses(0); //.cTokenAddress;
     trPars = await jBQContract.trancheParameters(0);
-    console.log("BenQi Price: " + await jBQHelperContract.getBenQiPriceHelper(trAddresses[1], trPars[6], trPars[5]));
+    console.log("BenQi Price: " + await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5]));
     trPar = await jBQContract.trancheParameters(0);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
   });
