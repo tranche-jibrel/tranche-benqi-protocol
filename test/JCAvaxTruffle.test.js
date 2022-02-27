@@ -147,10 +147,6 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("BenQi Price: " + await jBQHelperContract.getBenQiPriceHelper(trAddresses[1], trPars[6], trPars[5]));
     trPar = await jBQContract.trancheParameters(0);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
-  
-    console.log("staker counter trA: " + (await jBQContract.stakeCounterTrA(user1, 0)).toString())
-    stkDetails = await jBQContract.stakingDetailsTrancheA(user1, 0, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it("user1 buys some token EthTrB", async function () {
@@ -163,10 +159,6 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " JAB");
     console.log("JBenQi qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
     console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0, 0)));
-  
-    console.log("staker counter trB: " + (await jBQContract.stakeCounterTrB(user1, 0)).toString())
-    stkDetails = await jBQContract.stakingDetailsTrancheB(user1, 0, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it('time passes...', async function () {
@@ -204,10 +196,6 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("JBenQi new qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
     trPar = await jBQContract.trancheParameters(0);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
-  
-    console.log("staker counter trA: " + (await jBQContract.stakeCounterTrA(user1, 0)).toString())
-    stkDetails = await jBQContract.stakingDetailsTrancheA(user1, 0, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it('time passes...', async function () {
@@ -244,9 +232,5 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " JAB");
     console.log("JBenQi new qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
     console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0, 0)));
-  
-    console.log("staker counter trB: " + (await jBQContract.stakeCounterTrB(user1, 0)).toString())
-    stkDetails = await jBQContract.stakingDetailsTrancheB(user1, 0, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 });

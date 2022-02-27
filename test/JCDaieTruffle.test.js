@@ -20,7 +20,6 @@ const fs = require('fs');
 const DAI_ABI = JSON.parse(fs.readFileSync('./test/utils/Dai.abi', 'utf8'));
 // console.log(JSON.stringify(contract.abi));
 
-const mySlice = artifacts.require("mySLICE");
 const JAdminTools = artifacts.require('JAdminTools');
 const JFeesCollector = artifacts.require('JFeesCollector');
 
@@ -33,7 +32,7 @@ const JTrancheBToken = artifacts.require('JTrancheBToken');
 
 // const MYERC20_TOKEN_SUPPLY = 5000000;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const DAIE_HOLDER = "0xD8c8edF5E23a4F69aeE60747294482e941dCBEa0";
+const DAIE_HOLDER = "0x075e72a5eDf65F0A5f44699c7654C1a76941Ddc8";
 const DAIE_ADDRESS = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
 const QIDAI = "0x835866d37AFB8CB8F8334dCCdaf66cf01832Ff5D";
 
@@ -74,11 +73,6 @@ contract("DAI.e JBenQi", function (accounts) {
   });
 
   it("All other contracts ok", async function () {
-    rewardTokenContract = await mySlice.deployed();
-    expect(rewardTokenContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(rewardTokenContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(rewardTokenContract.address);
-
     jFCContract = await JFeesCollector.deployed();
     expect(jFCContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jFCContract.address).to.match(/0x[0-9a-fA-F]{40}/);
@@ -164,21 +158,11 @@ contract("DAI.e JBenQi", function (accounts) {
     // console.log("BenQi Price: " + await jCompHelperContract.getBenQiPriceHelper(1));
     console.log("BenQi TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));
     console.log("BenQi total Value: " + fromWei(await jBQContract.getTotalValue(1)));
-
-    stkDetails = await jBQContract.stakingDetailsTrancheA(user1, 1, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it("user1 buys some other token daiTrA", async function () {
     tx = await daiContract.methods.approve(jBQContract.address, toWei(500)).send({from: user1});
     tx = await jBQContract.buyTrancheAToken(1, toWei(500), {from: user1});
-
-    console.log("staker counter trA: " + (await jBQContract.stakeCounterTrA(user1, 1)).toString())
-    stkDetails = await jBQContract.stakingDetailsTrancheA(user1, 1, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
-
-    stkDetails = await jBQContract.stakingDetailsTrancheA(user1, 1, 2);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it("user1 buys some token daiTrB", async function () {
@@ -206,10 +190,6 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("BenQi TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));
     console.log("TrB value: " + fromWei(await jBQContract.getTrBValue(1)));
     console.log("BenQi total Value: " + fromWei(await jBQContract.getTotalValue(1)));
-
-    console.log("staker counter trB: " + (await jBQContract.stakeCounterTrB(user1, 1)).toString())
-    stkDetails = await jBQContract.stakingDetailsTrancheB(user1, 1, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it('time passes...', async function () {
@@ -246,12 +226,6 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("JBenQi new DAI.e balance: "+ fromWei8Dec(await jBQContract.getTokenBalance(QIDAI)) + " qiDai");
     console.log("BenQi TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));
     console.log("BenQi total Value: " + fromWei(await jBQContract.getTotalValue(1)));
-
-    console.log("staker counter trA: " + (await jBQContract.stakeCounterTrA(user1, 1)).toString())
-    stkDetails = await jBQContract.stakingDetailsTrancheA(user1, 1, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
-    stkDetails = await jBQContract.stakingDetailsTrancheA(user1, 1, 2);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   }); 
 
   it('time passes...', async function () {
@@ -285,10 +259,6 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));
     console.log("TrB value: " +  fromWei(await jBQContract.getTrBValue(1)));
     console.log("BenQi total Value: " + fromWei(await jBQContract.getTotalValue(1)));
-
-    console.log("staker counter trB: " + (await jBQContract.stakeCounterTrB(user1, 1)).toString())
-    stkDetails = await jBQContract.stakingDetailsTrancheB(user1, 1, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   }); 
 
 

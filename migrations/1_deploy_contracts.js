@@ -1,8 +1,6 @@
 require('dotenv').config();
 const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
 
-var mySLICE = artifacts.require("./mocks/mySLICE.sol");
-
 var Chainlink1 = artifacts.require("./mocks/Chainlink1.sol");
 var Chainlink2 = artifacts.require("./mocks/Chainlink2.sol");
 
@@ -19,7 +17,6 @@ var AvaxGateway = artifacts.require('AVAXGateway');
 
 var MarketHelper = artifacts.require("MarketHelper.sol");
 var PriceHelper = artifacts.require("PriceHelper.sol");
-var IncentivesController = artifacts.require("IncentivesController.sol");
 
 module.exports = async (deployer, network, accounts) => {
   const MYERC20_TOKEN_SUPPLY = 5000000;
@@ -45,9 +42,6 @@ module.exports = async (deployer, network, accounts) => {
   if (network == "development") {
     const tokenOwner = accounts[0];
 
-    const mySLICEinstance = await deployProxy(mySLICE, [MYERC20_TOKEN_SUPPLY], { from: tokenOwner });
-    console.log('mySLICE Deployed: ', mySLICEinstance.address);
-
     const factoryOwner = accounts[0];
     const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
     console.log('JAdminTools Deployed: ', JATinstance.address);
@@ -59,7 +53,7 @@ module.exports = async (deployer, network, accounts) => {
     console.log("Tranches Deployer: " + JTDeployer.address);
 
     const JBQInstance = await deployProxy(JBenQi, [JATinstance.address, JFCinstance.address, JTDeployer.address,
-      QITOKEN, TROLLER_ADDRESS, mySLICEinstance.address], { from: factoryOwner });
+      QITOKEN, TROLLER_ADDRESS], { from: factoryOwner });
     console.log('JBenQi Deployed: ', JBQInstance.address);
 
     await deployer.deploy(AvaxGateway, QIAVAX, JBQInstance.address);
@@ -124,16 +118,6 @@ module.exports = async (deployer, network, accounts) => {
       from: factoryOwner
     });
     console.log('myMktHelperinstance Deployed: ', myMktHelperinstance.address);
-
-    const myIncentivesControllerInstance =
-      await deployProxy(IncentivesController, [mySLICEinstance.address, myMktHelperinstance.address, myPriceHelperInst.address], {
-        from: tokenOwner
-      });
-    console.log('myIncentivesControllerInstance Deployed: ', myIncentivesControllerInstance.address);
-
-    await myPriceHelperInst.setControllerAddress(myIncentivesControllerInstance.address, { from: tokenOwner })
-
-    await JBQInstance.setIncentivesControllerAddress(myIncentivesControllerInstance.address)
 
   } else if (network == "fuji") {
     let {

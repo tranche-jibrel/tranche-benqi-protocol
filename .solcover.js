@@ -19,7 +19,7 @@ module.exports = {
     fork: 'https://api.avax.network/ext/bc/C/rpc',
     network_id: 43114,
     unlocked_accounts: [
-      '0xD8c8edF5E23a4F69aeE60747294482e941dCBEa0', // DAi tests
+      '0x075e72a5eDf65F0A5f44699c7654C1a76941Ddc8', // DAi tests
       //'0xAe2D4617c862309A3d75A0fFB358c7a5009c673F', // USDC tests
     ],
   }

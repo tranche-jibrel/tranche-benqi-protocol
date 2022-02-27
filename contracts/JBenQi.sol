@@ -17,7 +17,6 @@ import "./interfaces/IQiErc20.sol";
 import "./interfaces/IComptrollerLensInterface.sol";
 import "./JBenQiStorage.sol";
 import "./TransferAVAXHelper.sol";
-import "./interfaces/IIncentivesController.sol";
 import "./interfaces/IJBenQiHelper.sol";
 
 
@@ -31,21 +30,18 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
      * @param _tranchesDepl tranches deployer contract address
      * @param _qiTokenAddress COMP token contract address
      * @param _comptrollAddress comptroller contract address
-     * @param _rewardsToken rewards token address (slice token address)
      */
     function initialize(address _adminTools, 
             address _feesCollector, 
             address _tranchesDepl,
             address _qiTokenAddress,
-            address _comptrollAddress,
-            address _rewardsToken) external initializer() {
+            address _comptrollAddress) external initializer() {
         OwnableUpgradeable.__Ownable_init();
         adminToolsAddress = _adminTools;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
         qiTokenAddress = _qiTokenAddress;
         trollerAddress = _comptrollAddress;
-        rewardsToken = _rewardsToken;
         redeemTimeout = 3; //default
         // totalBlocksPerYear = 2102400; // same number like in BenQi protocol
         totalBlocksPerYear = 31557600; // secondonds in 1 year
@@ -86,21 +82,6 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
 
     /**
      * @dev set incentive rewards address
-     * @param _incentivesController incentives controller contract address
-     */
-    function setIncentivesControllerAddress(address _incentivesController) external override onlyAdmins {
-        incentivesControllerAddress = _incentivesController;
-    }
-
-    /**
-     * @dev get incentive rewards address
-     */
-    function getIncentivesControllerAddress() external view override returns (address) {
-        return incentivesControllerAddress;
-    }
-
-    /**
-     * @dev set incentive rewards address
      * @param _helper JBenQi helper contract address
      */
     function setBenQiHelperAddress(address _helper) external onlyAdmins {
@@ -114,14 +95,12 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
      * @param _tranchesDepl tranches deployer contract address
      * @param _qiTokenAddress COMP token contract address
      * @param _comptrollAddress comptroller contract address
-     * @param _rewardsToken rewards token address (slice token address)
      */
     function setNewEnvironment(address _adminTools, 
             address _feesCollector, 
             address _tranchesDepl,
             address _qiTokenAddress,
-            address _comptrollAddress,
-            address _rewardsToken) external onlyOwner {
+            address _comptrollAddress) external onlyOwner {
         require((_adminTools != address(0)) && (_feesCollector != address(0)) && 
             (_tranchesDepl != address(0)) && (_comptrollAddress != address(0)) && (_qiTokenAddress != address(0)), "ChkAddress");
         adminToolsAddress = _adminTools;
@@ -129,7 +108,6 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
         tranchesDeployerAddress = _tranchesDepl;
         qiTokenAddress = _qiTokenAddress;
         trollerAddress = _comptrollAddress;
-        rewardsToken = _rewardsToken;
     }
 
     /**
@@ -423,103 +401,6 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
     }
 
     /**
-     * @dev set staking details for tranche A holders, with number, amount and time
-     * @param _trancheNum tranche number
-     * @param _account user's account
-     * @param _stkNum staking detail counter
-     * @param _amount amount of tranche A tokens
-     * @param _time time to be considered the deposit
-     */
-    function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external override onlyAdmins {
-        stakeCounterTrA[_account][_trancheNum] = _stkNum;
-        StakingDetails storage details = stakingDetailsTrancheA[_account][_trancheNum][_stkNum];
-        details.startTime = _time;
-        details.amount = _amount;
-    }
-
-    /**
-     * @dev when redemption occurs on tranche A, removing tranche A tokens from staking information (FIFO logic)
-     * @param _trancheNum tranche number
-     * @param _amount amount of redeemed tokens
-     */
-    function decreaseTrancheATokenFromStake(uint256 _trancheNum, uint256 _amount) internal {
-        uint256 senderCounter = stakeCounterTrA[msg.sender][_trancheNum];
-        uint256 tmpAmount = _amount;
-        for (uint i = 1; i <= senderCounter; i++) {
-            StakingDetails storage details = stakingDetailsTrancheA[msg.sender][_trancheNum][i];
-            if (details.amount > 0) {
-                if (details.amount <= tmpAmount) {
-                    tmpAmount = tmpAmount.sub(details.amount);
-                    details.amount = 0;
-                } else {
-                    details.amount = details.amount.sub(tmpAmount);
-                    tmpAmount = 0;
-                }
-            }
-            if (tmpAmount == 0)
-                break;
-        }
-    }
-
-    function getSingleTrancheUserStakeCounterTrA(address _user, uint256 _trancheNum) external view override returns (uint256) {
-        return stakeCounterTrA[_user][_trancheNum];
-    }
-
-    function getSingleTrancheUserSingleStakeDetailsTrA(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
-        return (stakingDetailsTrancheA[_user][_trancheNum][_num].startTime, stakingDetailsTrancheA[_user][_trancheNum][_num].amount);
-    }
-
-    /**
-     * @dev set staking details for tranche B holders, with number, amount and time
-     * @param _trancheNum tranche number
-     * @param _account user's account
-     * @param _stkNum staking detail counter
-     * @param _amount amount of tranche B tokens
-     * @param _time time to be considered the deposit
-     */
-    function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external override onlyAdmins {
-        stakeCounterTrB[_account][_trancheNum] = _stkNum;
-        StakingDetails storage details = stakingDetailsTrancheB[_account][_trancheNum][_stkNum];
-        details.startTime = _time;
-        details.amount = _amount; 
-    }
-
-    /**
-     * @dev when redemption occurs on tranche B, removing tranche B tokens from staking information (FIFO logic)
-     * @param _trancheNum tranche number
-     * @param _amount amount of redeemed tokens
-     */
-    function decreaseTrancheBTokenFromStake(uint256 _trancheNum, uint256 _amount) internal {
-        uint256 senderCounter = stakeCounterTrB[msg.sender][_trancheNum];
-        uint256 tmpAmount = _amount;
-        for (uint i = 1; i <= senderCounter; i++) {
-            StakingDetails storage details = stakingDetailsTrancheB[msg.sender][_trancheNum][i];
-            if (details.amount > 0) {
-                if (details.amount <= tmpAmount) {
-                    tmpAmount = tmpAmount.sub(details.amount);
-                    details.amount = 0;
-                    //delete stakingDetailsTrancheB[msg.sender][_trancheNum][i];
-                    // update details number
-                    //stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
-                } else {
-                    details.amount = details.amount.sub(tmpAmount);
-                    tmpAmount = 0;
-                }
-            }
-            if (tmpAmount == 0)
-                break;
-        }
-    }
-
-    function getSingleTrancheUserStakeCounterTrB(address _user, uint256 _trancheNum) external view override returns (uint256) {
-        return stakeCounterTrB[_user][_trancheNum];
-    }
-
-    function getSingleTrancheUserSingleStakeDetailsTrB(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
-        return (stakingDetailsTrancheB[_user][_trancheNum][_num].startTime, stakingDetailsTrancheB[_user][_trancheNum][_num].amount);
-    }
-
-    /**
      * @dev buy Tranche A Tokens
      * @param _trancheNum tranche number
      * @param _amount amount of stable coins sent by buyer
@@ -553,17 +434,11 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
             uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
             uint256 normAmount = _amount.mul(10 ** diffDec);
             taAmount = normAmount.mul(1e18).div(trancheParameters[_trancheNum].storedTrancheAPrice);
-            //Mint trancheA tokens and send them to msg.sender and notify to incentive controller BEFORE totalSupply updates
-            IIncentivesController(incentivesControllerAddress).trancheANewEnter(msg.sender, trancheAddresses[_trancheNum].ATrancheAddress);
+
             IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).mint(msg.sender, taAmount);
         } else {
             taAmount = 0;
         }
-
-        stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].add(1);
-        StakingDetails storage details = stakingDetailsTrancheA[msg.sender][_trancheNum][stakeCounterTrA[msg.sender][_trancheNum]];
-        details.startTime = block.timestamp;
-        details.amount = taAmount;
 
         lastActivity[msg.sender] = block.number;
         emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
@@ -626,13 +501,6 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
                 SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(underTokenAddress), feesCollectorAddress, feesAmount);
             }
         }
-
-        // claim and transfer rewards to msg.sender. Be sure to wait for this function to be completed! 
-        bool rewClaimCompleted = IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
-
-        // decrease tokens after claiming rewards
-        if (rewClaimCompleted && _amount > 0)
-           decreaseTrancheATokenFromStake(_trancheNum, _amount);
      
         IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).burn(_amount);
 
@@ -677,16 +545,9 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
         }
         uint256 newCompTokenBalance = getTokenBalance(qiTokenAddress);
         if (newCompTokenBalance > prevCompTokenBalance) {
-            //Mint trancheB tokens and send them to msg.sender and notify to incentive controller BEFORE totalSupply updates
-            IIncentivesController(incentivesControllerAddress).trancheBNewEnter(msg.sender, trancheAddresses[_trancheNum].BTrancheAddress);
             IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).mint(msg.sender, tbAmount);
         } else 
-            tbAmount = 0;
-
-        stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].add(1);
-        StakingDetails storage details = stakingDetailsTrancheB[msg.sender][_trancheNum][stakeCounterTrB[msg.sender][_trancheNum]];
-        details.startTime = block.timestamp;
-        details.amount = tbAmount;     
+            tbAmount = 0;  
 
         lastActivity[msg.sender] = block.number;
         emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
@@ -751,13 +612,6 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
                 SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(underTokenAddress), feesCollectorAddress, feesAmount);
             }   
         }
-
-        // claim and transfer rewards to msg.sender. Be sure to wait for this function to be completed! 
-        bool rewClaimCompleted = IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
-
-        // decrease tokens after claiming rewards
-        if (rewClaimCompleted && _amount > 0)
-            decreaseTrancheBTokenFromStake(_trancheNum, _amount);
 
         IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).burn(_amount);
 
