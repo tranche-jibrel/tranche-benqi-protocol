@@ -168,14 +168,14 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("BenQi total Value: " + fromWei(await jBQContract.getTotalValue(1)));
     console.log("TrB total supply: " + fromWei(await daiTrBContract.totalSupply()));
     console.log("BenQi TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, toWei("10000"))));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     tx = await daiContract.methods.approve(jBQContract.address, toWei(1000)).send({from: user1});
     tx = await jBQContract.buyTrancheBToken(1, toWei(1000), {from: user1});
     console.log("User1 New DAI.e balance: " + fromWei(await daiContract.methods.balanceOf(user1).call()) + " DAI.e");
     console.log("User1 trB tokens: " + fromWei(await daiTrBContract.balanceOf(user1)) + " DTB");
     // console.log("CErc20 DAI.e balance: " + fromWei(await daiContract.methods.balanceOf(QIDAI).call()) + " DAI.e");
     console.log("JBenQi DAI.e balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIDAI)) + " qiDai");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     trAddresses = await jBQContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jBQContract.trancheParameters(1);
     console.log("BenQi Price: " + await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5]));
@@ -238,7 +238,7 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("User1 trB tokens: "+ fromWei(bal) + " DTB");
     console.log("JBenQi qiDai balance: "+ fromWei8Dec(await jBQContract.getTokenBalance(QIDAI)) + " qiDai");
     tx = await daiTrBContract.approve(jBQContract.address, bal, {from: user1});
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     console.log("TrB value: " +  fromWei(await jBQContract.getTrBValue(1)));
     console.log(await jATContract.isAdmin(jBQContract.address));
 

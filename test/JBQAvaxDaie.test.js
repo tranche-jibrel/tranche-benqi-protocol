@@ -118,7 +118,7 @@ contract("JBenQi", function (accounts) {
     // console.log(daiTrBContract.address);
   });
 
-  it("user1 buys some token EthTrA", async function () {
+  it("user1 buys some token AvaxTrA", async function () {
     console.log(user1);
     console.log("User1 Eth balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
     trAddresses = await jBQContract.trancheAddresses(0); //.cTokenAddress;
@@ -151,7 +151,7 @@ contract("JBenQi", function (accounts) {
     console.log("TrA price: " + fromWei(trPar[2].toString()));
   });
 
-  it("user1 buys some token EthTrB", async function () {
+  it("user1 buys some token AvaxTrB", async function () {
     //console.log("User1 Eth balance: "+ fromWei(await web3.eth.getBalance(user1)) + " AVAX");
     tx = await jBQContract.buyTrancheBToken(0, toWei("1"), {
       from: user1,
@@ -160,7 +160,7 @@ contract("JBenQi", function (accounts) {
     console.log("User1 New Eth balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
     console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " ATB");
     console.log("JBenQi qiAVAX balance: " + fromWei(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0)));
   });
 
   it("user1 buys some token daiTrA", async function () {
@@ -208,14 +208,14 @@ contract("JBenQi", function (accounts) {
     console.log("Compound total Value: " + fromWei(await jBQContract.getTotalValue(1)));
     console.log("TrB total supply: " + fromWei(await daiTrBContract.totalSupply()));
     console.log("Compound TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, toWei("10000"))));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     tx = await daiContract.methods.approve(jBQContract.address, toWei(1000)).send({from: user1});
     tx = await jBQContract.buyTrancheBToken(1, toWei(1000), {from: user1});
     console.log("User1 New DAI.e balance: " + fromWei(await daiContract.methods.balanceOf(user1).call()) + " DAI.e");
     console.log("User1 trB tokens: " + fromWei(await daiTrBContract.balanceOf(user1)) + " DTB");
     console.log("CErc20 DAI.e balance: " + fromWei(await daiContract.methods.balanceOf(QIDAI).call()) + " DAI.e");
     console.log("JBenQi DAI.e balance: " + fromWei(await jBQContract.getTokenBalance(QIDAI)) + " qiDAI");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     trAddresses = await jBQContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jBQContract.trancheParameters(1);
     console.log("Compound Price: " + await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5]));
@@ -235,7 +235,7 @@ contract("JBenQi", function (accounts) {
     console.log("New Actual Block: " + block.number);
   });
 
-  it("user1 redeems token EthTrA", async function () {
+  it("user1 redeems token AvaxTrA", async function () {
     oldBal = fromWei(await web3.eth.getBalance(user1));
     console.log("User1 Eth balance: " + oldBal + " AVAX");
     bal = await ethTrAContract.balanceOf(user1);
@@ -303,13 +303,13 @@ contract("JBenQi", function (accounts) {
     console.log("New Actual Block: " + block.number);
   });
 
-  it("user1 redeems token EthTrB", async function () {
+  it("user1 redeems token AvaxTrB", async function () {
     oldBal = fromWei(await web3.eth.getBalance(user1));
     console.log("User1 Eth balance: " + oldBal + " AVAX");
     bal = await ethTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: " + fromWei(bal) + " ATB");
     console.log("JBenQi qiAVAX balance: " + fromWei(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0)));
     tx = await ethTrBContract.approve(jBQContract.address, bal, {
       from: user1
     });
@@ -321,7 +321,7 @@ contract("JBenQi", function (accounts) {
     console.log("User1 trB interest: " + (newBal - oldBal) + " AVAX");
     console.log("User1 trB tokens: " + fromWei(await ethTrAContract.balanceOf(user1)) + " ATB");
     console.log("JBenQi new qiAVAX balance: " + fromWei(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0)));
   });
 
   it('let timeout elapsed', async function () {
@@ -340,7 +340,7 @@ contract("JBenQi", function (accounts) {
     console.log("User1 trB tokens: "+ fromWei(bal) + " DTB");
     console.log("JBenQi qiDAI balance: "+ fromWei(await jBQContract.getTokenBalance(QIDAI)) + " qiDAI");
     tx = await daiTrBContract.approve(jBQContract.address, bal, {from: user1});
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     console.log("TrB value: " +  fromWei(await jBQContract.getTrBValue(1)));
     tx = await jBQContract.redeemTrancheBToken(1, bal, {from: user1});
     newBal = fromWei(await daiContract.methods.balanceOf(user1).call());

@@ -20,7 +20,7 @@ module.exports = {
     network_id: 43114,
     unlocked_accounts: [
       '0x075e72a5eDf65F0A5f44699c7654C1a76941Ddc8', // DAi tests
-      //'0xAe2D4617c862309A3d75A0fFB358c7a5009c673F', // USDC tests
+      '0xA9497FD9D1dD0d00DE1Bf988E0e36794848900F9', // USDT tests
     ],
   }
 };

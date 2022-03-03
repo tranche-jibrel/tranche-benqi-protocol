@@ -77,7 +77,7 @@ Note: if AVAX tranche is deployed, please deploy AVAXGateway contract without a 
         </tr>
         <tr>
             <td>JBenQi</td>
-            <td><code>79,55%</code></td>
+            <td><code>80%</code></td>
             <td>---</td>
         </tr>
         <tr>
@@ -123,7 +123,7 @@ Note: if AVAX tranche is deployed, please deploy AVAXGateway contract without a 
         </tr>
         <tr>
             <td>JBenQi</td>
-            <td><code>18.15</code></td>
+            <td><code>17.96</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with BenQi to have interest rates and other informations to give tokens the price they should have block by block. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens. Upgradeable.</td>
         </tr>
         <tr>

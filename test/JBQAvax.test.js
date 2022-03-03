@@ -124,9 +124,9 @@ contract("AVAX JBenQi", function (accounts) {
     trPar = await jBQContract.trancheParameters(0);
     console.log("param tranche A: " + JSON.stringify(trPar, ["trancheAFixedPercentage", "trancheALastActionBlock", "storedTrancheAPrice", 
     "trancheACurrentRPB", "redemptionPercentage", "qiTokenDecimals", "underlyingDecimals"]));
-    tx = await jBQContract.buyTrancheAToken(0, toWei("1"), {
+    tx = await jBQContract.buyTrancheAToken(0, toWei("5"), {
       from: user1,
-      value: toWei("1")
+      value: toWei("5")
     });
     console.log("User1 New Avax balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
     console.log("User1 trA tokens: " + fromWei(await ethTrAContract.balanceOf(user1)) + " JAA");
@@ -135,21 +135,25 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("TrA price: " + fromWei(trPar[2].toString()));
     trAddresses = await jBQContract.trancheAddresses(0); //.cTokenAddress;
     trPars = await jBQContract.trancheParameters(0);
-    console.log("BenQi Price: " + await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5]));
+    console.log("BenQi Price: " + fromWei(await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5])));
     trPar = await jBQContract.trancheParameters(0);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
   });
 
-  it("user1 buys some token EthTrB", async function () {
+  it("user1 buys some token AvaxTrB", async function () {
     //console.log("User1 Avax balance: "+ fromWei(await web3.eth.getBalance(user1)) + " AVAX");
-    tx = await jBQContract.buyTrancheBToken(0, toWei("1"), {
+    tx = await jBQContract.buyTrancheBToken(0, toWei("3"), {
       from: user1,
-      value: toWei("1")
+      value: toWei("3")
     });
     console.log("User1 New Avax balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
     console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " JAB");
     console.log("JBenQi qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0, 0)));
+    trPars = await jBQContract.trancheParameters(0);
+    console.log("BenQi Price: " + fromWei(await jBQContract.getBenQiPrice(trAddresses[1], trPars[6], trPars[5])));
+    console.log("TrA value: " + fromWei(await jBQContract.getTrAValue(0)));
+    console.log("Total value: " + fromWei(await jBQContract.getTotalValue(0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0)));
   });
 
   it('time passes...', async function () {
@@ -198,13 +202,13 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("New Actual Block: " + block.number);
   });
 
-  it("user1 redeems token EthTrB", async function () {
+  it("user1 redeems token AvaxTrB", async function () {
     oldBal = fromWei(await web3.eth.getBalance(user1));
     console.log("User1 Avax balance: " + oldBal + " AVAX");
     bal = await ethTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: " + fromWei(bal) + " JAB");
     console.log("JBenQi qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    trbPrice = fromWei(await jBQContract.getTrancheBExchangeRate(0, 0))
+    trbPrice = fromWei(await jBQContract.getTrancheBExchangeRate(0))
     console.log("TrB price: " + trbPrice);
     console.log("qiAVAX eth bal:" + fromWei(await web3.eth.getBalance(QIAVAX)));
     //console.log(stPrice.toString());
@@ -222,6 +226,6 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("User1 trB interest: " + (newBal - oldBal) + " AVAX");
     console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " JAB");
     console.log("JBenQi new qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0)));
   });
 });
