@@ -42,8 +42,8 @@ const PriceHelper = artifacts.require("PriceHelper.sol");
 const IncentivesController = artifacts.require("IncentivesController.sol");
 
 const MYERC20_TOKEN_SUPPLY = 5000000;
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const DAIE_HOLDER = "0xD8c8edF5E23a4F69aeE60747294482e941dCBEa0";
+const {ZERO_ADDRESS} = constants;
+const DAIE_HOLDER = "0x075e72a5eDf65F0A5f44699c7654C1a76941Ddc8";
 const DAIE_ADDRESS = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
 const QIDAI = "0x835866d37AFB8CB8F8334dCCdaf66cf01832Ff5D";
 const MKT1_DECS = 18;
@@ -59,7 +59,7 @@ let owner, user1, distCount, balTrA, balTrB;
 const fromWei = (x) => web3.utils.fromWei(x.toString());
 const toWei = (x) => web3.utils.toWei(x.toString());
 
-contract("JBenQi DAI.e.e & rewards", function (accounts) {
+contract("JBenQi DAI.e & rewards", function (accounts) {
 
   it("ETH balances", async function () {
     //accounts = await web3.eth.getAccounts();
@@ -150,7 +150,7 @@ contract("JBenQi DAI.e.e & rewards", function (accounts) {
     console.log(await web3.eth.getBalance(DAIE_HOLDER));
     console.log(await web3.eth.getBalance(user1));
 
-    await daiContract.methods.transfer(user1, toWei(10000)).send({from: DAIE_HOLDER})
+    await daiContract.methods.transfer(user1, toWei(10000)).send({from: DAIE_HOLDER});
     console.log("UnBlockedAccount DAI.e balance: " + fromWei(await daiContract.methods.balanceOf(DAIE_HOLDER).call()) + " DAI.e");
     console.log("user1 DAI.e balance: " + fromWei(await daiContract.methods.balanceOf(user1).call()) + " DAI.e");
   });
@@ -205,7 +205,7 @@ contract("JBenQi DAI.e.e & rewards", function (accounts) {
     console.log("BenQi total Value: " + fromWei(await jBQContract.getTotalValue(1)));
     console.log("TrB total supply: " + fromWei(await daiTrBContract.totalSupply()));
     console.log("BenQi TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, toWei("10000"))));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     tx = await daiContract.methods.approve(jBQContract.address, toWei(1000)).send({from: user1});
     tx = await jBQContract.buyTrancheBToken(1, toWei(1000), {from: user1});
 
@@ -214,7 +214,7 @@ contract("JBenQi DAI.e.e & rewards", function (accounts) {
     console.log("User1 trB tokens: " + fromWei(await daiTrBContract.balanceOf(user1)) + " DTB");
     console.log("CErc20 DAI.e balance: " + fromWei(await daiContract.methods.balanceOf(QIDAI).call()) + " DAI.e");
     console.log("JBenQi DAI.e balance: " + fromWei(await jBQContract.getTokenBalance(QIDAI)) + " qiDAI");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     trAddresses = await jBQContract.trancheAddresses(1); //.qiTokenAddress;
     trPars = await jBQContract.trancheParameters(1);
     console.log("BenQi Price: " + await jBQHelperContract.getBenQiPriceHelper(trAddresses[1], trPars[6], trPars[5]));
@@ -582,7 +582,7 @@ contract("JBenQi DAI.e.e & rewards", function (accounts) {
     console.log("User1 trB tokens: " + fromWei(bal) + " DTB");
     console.log("JBenQi qiDAI balance: " + fromWei(await jBQContract.getTokenBalance(QIDAI)) + " qiDAI");
     tx = await daiTrBContract.approve(jBQContract.address, bal, {from: user1});
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     console.log("TrB value: " + fromWei(await jBQContract.getTrBValue(1)));
 
     tx = await jBQContract.redeemTrancheBToken(1, bal, {from: user1});

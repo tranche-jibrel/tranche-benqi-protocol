@@ -79,12 +79,12 @@ Other info can be found here: https://docs.tranche.finance/tranchefinance/slice-
     <tbody>
         <tr>
             <td>AVAXGateway</td>
-            <td><code>77.27%</code></td>
+            <td><code>70.83%</code></td>
             <td>---</td>
         </tr>
         <tr>
             <td>JBenQi</td>
-            <td><code>82.47%</code></td>
+            <td><code>80.95%</code></td>
             <td>---</td>
         </tr>
         <tr>
@@ -109,7 +109,7 @@ Other info can be found here: https://docs.tranche.finance/tranchefinance/slice-
         </tr>
         <tr>
             <td>MarketHelper</td>
-            <td><code>90.24%</code></td>
+            <td><code>92.68%</code></td>
             <td>98% in https://github.com/tranche-jibrel/tranche-rewards</td>
         </tr>
         <tr>
@@ -160,7 +160,7 @@ Other info can be found here: https://docs.tranche.finance/tranchefinance/slice-
         </tr>
         <tr>
             <td>JBenQi</td>
-            <td><code>20.89</code></td>
+            <td><code>20.41</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with BenQi to have interest rates and other informations to give tokens the price they should have block by block. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens. Upgradeable.</td>
         </tr>
         <tr>

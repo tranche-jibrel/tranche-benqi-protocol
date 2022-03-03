@@ -31,14 +31,13 @@ const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 const JTrancheAToken = artifacts.require('JTrancheAToken');
 const JTrancheBToken = artifacts.require('JTrancheBToken');
 
-// const MYERC20_TOKEN_SUPPLY = 5000000;
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const DAIE_HOLDER = "0xD8c8edF5E23a4F69aeE60747294482e941dCBEa0";
+const {ZERO_ADDRESS} = constants;
+const DAIE_HOLDER = "0x075e72a5eDf65F0A5f44699c7654C1a76941Ddc8";
 const DAIE_ADDRESS = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
 const QIDAI = "0x835866d37AFB8CB8F8334dCCdaf66cf01832Ff5D";
 
 let daiContract, jFCContract, jATContract, jTrDeplContract, jBQContract;
-let ethTrAContract, ethTrBContract, daiTrAContract, daiTrBContract;
+let daiTrAContract, daiTrBContract;
 let tokenOwner, user1;
 
 const fromWei = (x) => web3.utils.fromWei(x.toString());
@@ -103,17 +102,6 @@ contract("DAI.e JBenQi", function (accounts) {
     expect(jCompHelperContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jCompHelperContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jCompHelperContract.address);
-
-    trParams0 = await jBQContract.trancheAddresses(0);
-    ethTrAContract = await JTrancheAToken.at(trParams0.ATrancheAddress);
-    expect(ethTrAContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(ethTrAContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(ethTrAContract.address);
-
-    ethTrBContract = await JTrancheBToken.at(trParams0.BTrancheAddress);
-    expect(ethTrBContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(ethTrBContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(ethTrBContract.address);
 
     trParams1 = await jBQContract.trancheAddresses(1);
     daiTrAContract = await JTrancheAToken.at(trParams1.ATrancheAddress);
@@ -190,14 +178,14 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("BenQi total Value: " + fromWei(await jBQContract.getTotalValue(1)));
     console.log("TrB total supply: " + fromWei(await daiTrBContract.totalSupply()));
     console.log("BenQi TrA Value: " + fromWei(await jBQContract.getTrAValue(1)));
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, toWei("10000"))));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     tx = await daiContract.methods.approve(jBQContract.address, toWei(1000)).send({from: user1});
     tx = await jBQContract.buyTrancheBToken(1, toWei(1000), {from: user1});
     console.log("User1 New DAI.e balance: " + fromWei(await daiContract.methods.balanceOf(user1).call()) + " DAI.e");
     console.log("User1 trB tokens: " + fromWei(await daiTrBContract.balanceOf(user1)) + " DTB");
     // console.log("CErc20 DAI.e balance: " + fromWei(await daiContract.methods.balanceOf(QIDAI).call()) + " DAI.e");
     console.log("JBenQi DAI.e balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIDAI)) + " qiDai");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     trAddresses = await jBQContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jBQContract.trancheParameters(1);
     console.log("BenQi Price: " + await jCompHelperContract.getBenQiPriceHelper(trAddresses[1], trPars[6], trPars[5]));
@@ -270,7 +258,7 @@ contract("DAI.e JBenQi", function (accounts) {
     console.log("User1 trB tokens: "+ fromWei(bal) + " DTB");
     console.log("JBenQi qiDai balance: "+ fromWei8Dec(await jBQContract.getTokenBalance(QIDAI)) + " qiDai");
     tx = await daiTrBContract.approve(jBQContract.address, bal, {from: user1});
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(1)));
     console.log("TrB value: " +  fromWei(await jBQContract.getTrBValue(1)));
     console.log(await jATContract.isAdmin(jBQContract.address));
 

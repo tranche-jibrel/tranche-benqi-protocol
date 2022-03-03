@@ -74,7 +74,7 @@ module.exports = async (deployer, network, accounts) => {
     await JBQInstance.setAVAXGateway(JEGinstance.address, { from: factoryOwner });
 
     const JBQHelper = await deployProxy(JBenQiHelper, [/*JBQInstance.address*/], { from: factoryOwner });
-    console.log("JC Helper: " + JBQHelper.address);
+    console.log("JBQ Helper: " + JBQHelper.address);
 
     await JBQInstance.setBenQiHelperAddress(JBQHelper.address)
 

@@ -30,8 +30,7 @@ const JTrancheBToken = artifacts.require('JTrancheBToken');
 
 const AvaxGateway = artifacts.require('AVAXGateway');
 
-// const MYERC20_TOKEN_SUPPLY = 5000000;
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const {ZERO_ADDRESS} = constants;
 const QIAVAX = "0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c";
 
 const fromWei = (x) => web3.utils.fromWei(x.toString());
@@ -39,14 +38,13 @@ const toWei = (x) => web3.utils.toWei(x.toString());
 const fromWei8Dec = (x) => x / Math.pow(10, 8);
 const toWei8Dec = (x) => x * Math.pow(10, 8);
 
-let daiContract, cEtherContract, cERC20Contract, jFCContract, jATContract, jTrDeplContract, jBQContract;
-let ethTrAContract, ethTrBContract, daiTrAContract, daiTrBContract;
+let jFCContract, jATContract, jTrDeplContract, jBQContract;
+let ethTrAContract, ethTrBContract;
 let tokenOwner, user1;
 
 contract("AVAX JBenQi", function (accounts) {
 
   it("AVAX balances", async function () {
-    //accounts = await web3.eth.getAccounts();
     tokenOwner = accounts[0];
     user1 = accounts[1];
     console.log(tokenOwner);
@@ -74,9 +72,6 @@ contract("AVAX JBenQi", function (accounts) {
     expect(jBQContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jBQContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(jBQContract.address);
-    // await jBQContract.setRedemptionTimeout(0, {
-    //   from: accounts[0]
-    // });
 
     jBQHelperContract = await JBenQiHelper.deployed();
     expect(jBQHelperContract.address).to.be.not.equal(ZERO_ADDRESS);
@@ -93,17 +88,6 @@ contract("AVAX JBenQi", function (accounts) {
     expect(ethTrBContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(ethTrBContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(ethTrBContract.address);
-
-    trParams1 = await jBQContract.trancheAddresses(1);
-    daiTrAContract = await JTrancheAToken.at(trParams1.ATrancheAddress);
-    expect(daiTrAContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(daiTrAContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(daiTrAContract.address);
-
-    daiTrBContract = await JTrancheBToken.at(trParams1.BTrancheAddress);
-    expect(daiTrBContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(daiTrBContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(daiTrBContract.address);
   });
 
   it("ETH Gateway", async function () {
@@ -162,7 +146,7 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("User1 New Avax balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
     console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " JAB");
     console.log("JBenQi qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0)));
   
     console.log("staker counter trB: " + (await jBQContract.stakeCounterTrB(user1, 0)).toString())
     stkDetails = await jBQContract.stakingDetailsTrancheB(user1, 0, 1);
@@ -184,7 +168,6 @@ contract("AVAX JBenQi", function (accounts) {
     bal = await ethTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: " + fromWei(bal) + " JAA");
     console.log("JBenQi qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    console.log("qiAVAX eth bal:" + fromWei(await web3.eth.getBalance(QIAVAX)));
     trPar = await jBQContract.trancheParameters(0);
     stPrice = trPar.storedTrancheAPrice * Math.pow(10, -18);
     //console.log(stPrice.toString());
@@ -193,9 +176,7 @@ contract("AVAX JBenQi", function (accounts) {
     taAmount = tempAmnt * stPrice;
     console.log(taAmount);
     tx = await ethTrAContract.approve(jBQContract.address, bal, {from: user1});
-    // await expectRevert.unspecified(jBQContract.redeemTrancheAToken(0, bal, {
-    //   from: user1
-    // }));
+
     tx = await jBQContract.redeemTrancheAToken(0, bal, {from: user1});
     newBal = fromWei(await web3.eth.getBalance(user1));
     console.log("User1 New Avax balance: " + newBal + " AVAX");
@@ -219,31 +200,28 @@ contract("AVAX JBenQi", function (accounts) {
     console.log("New Actual Block: " + block.number);
   });
 
-  it("user1 redeems token EthTrB", async function () {
+  it("user1 redeems token AvaxTrB", async function () {
     oldBal = fromWei(await web3.eth.getBalance(user1));
     console.log("User1 Avax balance: " + oldBal + " AVAX");
     bal = await ethTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: " + fromWei(bal) + " JAB");
     console.log("JBenQi qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    trbPrice = fromWei(await jBQContract.getTrancheBExchangeRate(0, 0))
+    trbPrice = fromWei(await jBQContract.getTrancheBExchangeRate(0))
     console.log("TrB price: " + trbPrice);
-    console.log("qiAVAX eth bal:" + fromWei(await web3.eth.getBalance(QIAVAX)));
     //console.log(stPrice.toString());
     tempAmnt = bal * Math.pow(10, -18);
     //console.log(tempAmnt.toString())
     taAmount = tempAmnt * trbPrice;
     console.log(taAmount);
     tx = await ethTrBContract.approve(jBQContract.address, bal, {from: user1});
-    // await expectRevert.unspecified(jBQContract.redeemTrancheBToken(0, bal, {
-    //   from: user1
-    // }));
+
     tx = await jBQContract.redeemTrancheBToken(0, bal, {from: user1});
     newBal = fromWei(await web3.eth.getBalance(user1));
     console.log("User1 New Avax balance: " + newBal + " AVAX");
     console.log("User1 trB interest: " + (newBal - oldBal) + " AVAX");
     console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " JAB");
     console.log("JBenQi new qiAVAX balance: " + fromWei8Dec(await jBQContract.getTokenBalance(QIAVAX)) + " qiAVAX");
-    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0, 0)));
+    console.log("TrB price: " + fromWei(await jBQContract.getTrancheBExchangeRate(0)));
   
     console.log("staker counter trB: " + (await jBQContract.stakeCounterTrB(user1, 0)).toString())
     stkDetails = await jBQContract.stakingDetailsTrancheB(user1, 0, 1);

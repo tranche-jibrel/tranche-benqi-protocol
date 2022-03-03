@@ -17,7 +17,7 @@ interface IJBenQi {
     function getTotalValue(uint256 _trancheNum) external view returns (uint256);
     function getTrancheACurrentRPB(uint256 _trancheNum) external view returns (uint256);
     function getTrancheAExchangeRate(uint256 _trancheNum) external view returns (uint256);
-    function getTrancheBExchangeRate(uint256 _trancheNum, uint256 _newAmount) external view returns (uint256 tbPrice);
+    function getTrancheBExchangeRate(uint256 _trancheNum) external view returns (uint256 tbPrice);
     function getIncentivesControllerAddress() external view returns (address);
     function setIncentivesControllerAddress(address _incentivesController) external;
     function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external;
