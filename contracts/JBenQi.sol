@@ -342,10 +342,11 @@ contract JBenQi is OwnableUpgradeable, ReentrancyGuardUpgradeable, JBenQiStorage
     /**
      * @dev get Tranche A RPB for percentage (scaled by 18 decimals)
      * @param _trancheNum tranche number
-     * @return tranche A token current price
+     * @return tranche A token current RPB
      */
     function calcRPBFromPercentage(uint256 _trancheNum) public returns (uint256) {
-        trancheParameters[_trancheNum].trancheACurrentRPB = (trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
+        trancheParameters[_trancheNum].trancheACurrentRPB = trancheParameters[_trancheNum].storedTrancheAPrice
+                        .mul(trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
         return trancheParameters[_trancheNum].trancheACurrentRPB;
     }
 
